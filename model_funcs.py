@@ -41,6 +41,7 @@ def get_vol_to_sa_df(path="./data/elevation-area-volume.csv"):
     return df
 
 def get_surface_area(volume, df):
+    # Note: volume must be in m^3 and surface area will be returned in m^2
     return np.interp(volume, df["volume_m3"], df["area_m2"])
 
 #basic inflow function
