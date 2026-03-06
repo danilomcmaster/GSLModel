@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 ## ODE SOLVER
 def rk4(f, x0, t):
@@ -33,7 +34,14 @@ def rk4(f, x0, t):
         
     return A
 
+def get_vol_to_sa_df(path="./data/elevation-area-volume.csv"):
+    df = pd.read_csv(path)
+    df["elev"] = df["elev_ft_NAVD88"]
+    df = df[["elev", "volume_m3", "area_m2"]]
+    return df
 
+def get_surface_area(volume, df):
+    return np.interp(volume, df["volume_m3"], df["area_m2"])
 
 #basic inflow function
 def basic_inflow(x, t):
