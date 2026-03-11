@@ -25,9 +25,28 @@ The Great Salt Lake is of great ecological importance to Utah's environment. In 
 
 \section{Modeling}
 
+We derived a model to describe the change in volume of the Great Salt Lake over time. The simple version of this model incorporates a simple function capturing all of the inflow ($I(t)$) as well as a simple function approximating the evaporation rate ($E(t)$) of the lake proportional to its surface area at time $t$ (we note that the surface area is entirely dependent on the volume of the lake and has no inherent relationship to time). For the most simple system that we will be analyzing we chose not to consider factors such as precipitation, salinity, wind, and other factors. The ODE that represents this relationship is $\frac{dV}{dt} = I(t) - E(t)A(V)$. This is a nonautonomous ODE, whose order can depend on different factors of the shape of the lake basin. It is interesting to note that when modeling a shallow lake such as the Great Salt Lake, it is common to approximate the function of surface area as a function of volume as some function resembling $A = kV^a$ for some $a$ usually less than one. We have chosen, however, to represent the function describing surface area in terms of volume as an approximation of real-life bathymetry data. While this choice will help us to construct a closer approximation to the volume data of the Great Salt Lake, it is worth noting that this decision also makes it slightly more difficult to analyze the ODE explicitly since there is no closed form representation of that equation. 
+
 \section{Results}
 
 \section{Analysis}
+
+\section*{Nondimensionalization}
+
+We begin our nondimensionalization by introducing the following constants: 
+\begin{itemize}
+\item $V_0$: The typical volume of the lake
+\item $A_0$: The typical area of the lake
+\item $I_0$: The typical inflow of the lake
+\item $E_0$: The typical evaporation rate of the lake.
+\end{itemize}
+
+We also define new, dimensionless variables $v = \frac{V}{V_0}$ and $\tau = \frac{t}{T}$. With that, we have the conversion $V = vV_0$ and $t = \tau T$. Substituting these variables into our ODE, we have $\frac{V_0}{T}\frac{dv}{d\tau} = I(\tau T) - E(\tau T)A(vV_0)$. We will define a new surface area function $a(v) = \frac{A(vV_0)}{A_0}$. We substitute this into the equation and divide both sides by $I_0$ to get $\frac{V_0}{I_0T}\frac{dv}{d\tau} = \frac{I(\tau T)}{I_0} - \frac{E(\tau T)A_0}{I_0}a(v)$. Setting $T = \frac{V_0}{I_0}$ and defining a new parameter $\gamma = \frac{A_0E_0}{I_0}$, the nondimensionalized equation becomes \[
+\frac{dv}{d\tau} = \frac{I(t)}{I_0} - \gamma\frac{E(t)}{E_0}a(v)
+
+\section*{Equilibria}
+
+Assuming typical or average inflow and evaporation rate, $I_0$ and $E_0$ respectively, our new nondimensionalized system becomes $\frac{dv}{d\tau} = 1 - \gamma a(v)$. So, our equilibria occur where $a(v) = \frac{1}{\gamma} = \frac{I_0}{A_0E_0}$. What this tells us, is that assuming a constant inflow and evaporation rate, around the typical rates we would have an equilibrium point around whichever value for volume gives an area of $a(v) = \frac{1}{\gamma}$
 
 \section{Conclusions}
 
