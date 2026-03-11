@@ -25,17 +25,20 @@ The Great Salt Lake is of great ecological importance to Utah's environment. In 
 
 \section{Modeling}
 
-We derived a model to describe the change in volume of the Great Salt Lake over time. The simple version of this model incorporates a simple function capturing all of the inflow ($I(t)$) as well as a simple function approximating the evaporation rate ($E(t)$) of the lake proportional to its surface area at time $t$ (we note that the surface area is entirely dependent on the volume of the lake and has no inherent relationship to time). For the most simple system that we will be analyzing we chose not to consider factors such as precipitation, salinity, wind, and other factors. The ODE that represents this relationship is $\frac{dV}{dt} = I(t) - E(t)A(V)$. This is a nonautonomous ODE, whose order can depend on different factors of the shape of the lake basin. It is interesting to note that when modeling a shallow lake such as the Great Salt Lake, it is common to approximate the function of surface area as a function of volume as some function resembling $A = kV^a$ for some $a$ usually less than one. We have chosen, however, to represent the function describing surface area in terms of volume as an approximation of real-life bathymetry data. While this choice will help us to construct a closer approximation to the volume data of the Great Salt Lake, it is worth noting that this decision also makes it slightly more difficult to analyze the ODE explicitly since there is no closed form representation of that equation. 
+We derived a model to describe the change in volume of the Great Salt Lake over time. The simple version of this model incorporates a simple function capturing all of the inflow ($I(t)$) as well as a simple function approximating the evaporation rate ($E(t)$) of the lake proportional to its surface area at time $t$ (we note that the surface area is entirely dependent on the volume of the lake and has no inherent relationship to time). For the most simple system that we will be analyzing we chose not to consider factors such as precipitation, salinity, wind, and other factors. The ODE that represents this relationship is
+\begin{equation}
+    \frac{dV}{dt} = I(t) - E(t)A(V).
+\end{equation}
+This is a nonautonomous ODE, whose order can depend on different factors of the shape of the lake basin. It is interesting to note that when modeling a shallow lake such as the Great Salt Lake, it is common to approximate the function of surface area as a function of volume as some function resembling $A = kV^a$ for some $a$ usually less than one. We have chosen, however, to represent the function describing surface area in terms of volume as an approximation of real-life bathymetry data. While this choice will help us to construct a closer approximation to the volume data of the Great Salt Lake, it is worth noting that this decision also makes it slightly more difficult to analyze the ODE explicitly since there is no closed form representation of that equation. 
 
 \subsection{Inflow}
-To get a function for the volume of water going into the lake $(I(t))$, we looked at past inflow data from 1998 to present and used scipy.optimize.curve\_fit to fit a sinusoidal function to the data. The graph of inflow data and the fitted function is shown in % $\ref{fig:inflow1}$% 
-Figure??. 
+To get a function for the volume of water going into the lake $(I(t))$, we looked at past inflow data from 1998 to present and used scipy.optimize.curve\_fit to fit a sinusoidal function to the data. The graph of inflow data and the fitted function is shown in $\ref{fig:inflow1}$
 
-% \begin{figure}
-%   \includegraphics[width=\linewidth]{boat.jpg}
-%   \caption{A boat.}
-%   \label{fig:inflow1}
-% \end{figure}
+\begin{figure}[h]
+  \includegraphics[width=\linewidth]{basic_inflow.png}
+  \caption{Inflow function}
+  \label{fig:inflow1}
+\end{figure}
 
 \subsection{Outflow}
 
