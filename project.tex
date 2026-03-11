@@ -41,6 +41,11 @@ To get a function for the volume of water going into the lake $(I(t))$, we looke
 \end{figure}
 
 \subsection{Outflow}
+While we initially considered evaporation as a constant, the underlying data shows clear periodic fluctuations which we concluded were due to seasons. To account for the seasonality of temperature and humidity, we intend to model the evaporation coefficient using a sine function.
+\begin{equation}
+    k(t) = A \cdot \sin\left(\frac{2\pi}{12}t + \phi\right) + C
+\end{equation}
+This allows us to simulate the peak evaporation of the hot summer months and the reduced loss during winter. Similarly, this periodic approach helps explain why the lake volume follows a downward trend, consistently losing ground over years, but showing temporary recovery during the spring runoff.
 
 \section{Results}
 
