@@ -1,3 +1,4 @@
+
 \documentclass[12pt]{article}
 \usepackage{graphicx} % Required for inserting images
 \usepackage{amssymb, amsmath, amsthm}
@@ -95,6 +96,10 @@ We also define new, dimensionless variables $v = \frac{V}{V_0}$ and $\tau = \fra
 \subsection{Equilibria}
 
 Assuming typical or average inflow and evaporation rate, $I_0$ and $E_0$ respectively, our new nondimensionalized system becomes $\frac{dv}{d\tau} = 1 - \gamma a(v)$. So, our equilibria occur where $a(v) = \frac{1}{\gamma} = \frac{I_0}{A_0E_0}$. What this tells us, is that assuming a constant inflow and evaporation rate, around the typical rates we would have an equilibrium point around whichever value for volume gives an area of $a(v) = \frac{1}{\gamma}$.
+
+\subsection{Stability Analysis}
+
+Since we have an equilibrium for $v*$ where $a(v*) = \frac{1}{\gamma}$, we linearize the system around that equilibrium point to determine its stability. Taking $\frac{dv}{d\tau} = f(v) = 1 - \gamma a(v)$, we have $f'(v) = -\gamma a'(v)$. So, we have two cases: i) if $a'(v) > 0$, then $f'(v) < 0$ and the equilibrium is stable or ii) if $a'(v) < 0$, then $f'(v) > 0$ and the equilibrium is unstable. It is reasonable to assume that $a'(v) > 0$ since surface area should increase as volume increases.
 
 \section{Conclusions}
 
