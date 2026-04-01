@@ -44,6 +44,13 @@ def get_surface_area(volume, df):
     # Note: volume must be in m^3 and surface area will be returned in m^2
     return np.interp(volume, df["volume_m3"], df["area_m2"])
 
+def get_vp_salinity_df(path="./data/vp-salinity.csv"):
+    df = pd.read_csv(path)
+    return df
+
+def get_vp_reduction(salinity, df):
+    return np.interp(salinity, df["salinity"], df["vp_reduction"])
+
 #basic inflow function
 def basic_inflow(x, t):
     """Simple seasonal inflow function that varies sinusoidally with time."""
