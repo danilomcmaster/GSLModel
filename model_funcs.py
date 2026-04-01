@@ -40,7 +40,7 @@ def get_vol_to_sa_df(path="./data/elevation-area-volume.csv"):
     df = df[["elev", "volume_m3", "area_m2"]]
     return df
 
-def get_surface_area(volume, df):
+def surface_area(volume, df):
     # Note: volume must be in m^3 and surface area will be returned in m^2
     return np.interp(volume, df["volume_m3"], df["area_m2"])
 
@@ -48,8 +48,11 @@ def get_vp_salinity_df(path="./data/vp-salinity.csv"):
     df = pd.read_csv(path)
     return df
 
-def get_vp_reduction(salinity, df):
+def vp_reduction(salinity, df):
     return np.interp(salinity, df["salinity"], df["vp_reduction"])
+
+def salinity(volume):
+    return 1230618833073.342*(1/volume) + 171886.23798781837*(volume**(-1/3))
 
 #basic inflow function
 def basic_inflow(x, t):
