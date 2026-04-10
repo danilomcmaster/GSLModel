@@ -63,11 +63,62 @@ def basic_inflow(x, t):
 #basic outflow function
 def basic_outflow(x, t, evap):
     """Takes a function of evaporation to determine outflow, and x, t,
-    and returns outflow."""
-    return evap(t)
+    and returns outflow.
+    x: current volume
+    t: current time
+    evap_func: the function used to calculate evaporation
+    """
+    return evap(t, x)
 
 ## Evaporation function ##
 ## TO DO - Evaporation function as a function of time, temperature, surface area (proportional to volume), and salinity.
+
+# Weather Functions (Simulating Seasons)
+def simulate_temperature(t):
+    # Simulates temperature in Celsius over a 365 day year
+    # Peaks in summer (around month 7), lowest in winter
+    mean_temp = 11.0
+    amplitude = 15.0
+    return mean_temp + amplitude * np.sin(2 * np.pi * (t - 213) / 365)
+
+def simulate_wind_speed(t):
+    # Simulates wind speed in m/s
+    mean_wind = 3.0
+    amplitude = 1.5
+    return mean_wind + amplitude * np.sin(2 * np.pi * t / 182.5)
+
+def calculate_vapor_pressures(T):
+    RELATIVE_HUMIDITY = 0.40 # 40% average humidity
+    # Magnus-Tetens formula for saturation vapor pressure (kPa)
+    es = 0.611 * np.exp((17.27 * T) / (T + 237.3))
+    # Actual vapor pressure
+    ea = es * RELATIVE_HUMIDITY
+    return es, ea
+
+def evap_func(t, V):
+    WIND_COEFF_A = 0.001     # Empirical mass transfer coefficient
+    WIND_COEFF_B = 0.0005    # Empirical mass transfer coefficient
+    # Get current weather for month t
+    T = simulate_temperature(t)
+    u = simulate_wind_speed(t)
+
+    # Calculate vapor pressures
+    es, ea = calculate_vapor_pressures(T)
+
+    # Calculate Dalton's Evaporation Rate (E)
+    # E = f(wind) * (es - ea)
+    wind_function = WIND_COEFF_A + WIND_COEFF_B * u
+    E = wind_function * (es - ea)
+
+    # Ensure evaporation doesn't go negative
+    E = max(E, 0)
+
+    # Calculate Area
+    current_area = surface_area(V, df_sa)
+
+    # The Final Differential
+    dVdt = -E * current_area
+    return dVdt
 
 
 
