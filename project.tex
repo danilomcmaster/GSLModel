@@ -24,7 +24,7 @@
 \maketitle
 
 \begin{abstract}
-Abstract text.
+In this paper, we develop a differential equation to model the dynamics of the Great Salt Lake. We analyze how the dynamics change as the equation changes; for example, how adding salinity to the evaporation rate changes the predictions of our model. 
 \end{abstract}
 
 \section{Introduction}
@@ -40,21 +40,19 @@ The function describing the historical volume of the lake can be most accurately
 
 We derived a model to describe the change in volume of the Great Salt Lake over time. The simple version of this model incorporates a simple function capturing all of the inflow ($I(t)$) as well as a simple function approximating the evaporation rate ($E(t)$) of the lake proportional to its surface area at time $t$ (we note that the surface area is entirely dependent on the volume of the lake and has no inherent relationship to time). For the most simple system that we will be analyzing we chose not to consider factors such as precipitation, salinity, wind, and other factors. The ODE that represents this relationship is
 
-\begin{document}
-
 \begin{table}[h!]
     \centering 
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{|c|c|c|}
     \hline
-        component & denoted as & units & Function of \\\hline\hline
-        Volume & $V(t)$ & $m^3$ & inflow, outflow, precipitation, evaporation, \textbf{volume}  \\\hline
-        Inflow due to Streams & $I_s(t)$ & $m^3$ & time\\\hline
-        Surface Area & $A(V)$ & $m^2$ & volume \\\hline
-        Temperature & $T(t)$ & Celcius & time\\\hline
-        Relative Humidity & $H(t)$ & unitless & time \\\hline
-        Salinity & $S(V)$ & $g/L$ & volume \\\hline
-        Evaporation Depth & $E_d(V, t)$ & $m$ & humidity, temperature, salinity \\\hline
-        Precipitation Depth & $P_d(V, t)$ & $m$ & time \\\hline
+        component & denoted as & Function of \\\hline\hline
+        Volume & $V(t)$ & inflow, outflow, precipitation, evaporation, \textbf{volume}  \\\hline
+        Inflow due to Streams & $I_s(t)$ & time\\\hline
+        Surface Area & $A(V)$ & volume \\\hline
+        Temperature & $T(t)$ & time\\\hline
+        Humidity & $H(t)$ & time \\\hline
+        Salinity & $S(V)$ & volume \\\hline
+        Evaporation Depth & $E_d(V, t)$ & humidity, temperature, salinity \\\hline
+        Precipitation Depth & $P_d(V, t)$ & time \\\hline
     \end{tabular}
     \caption{State variables of the model \eqref{eq:model}}
 \end{table}
@@ -72,6 +70,7 @@ We derived a model to describe the change in volume of the Great Salt Lake over 
 \end{aligned}\label{eq:model}
 \end{equation}
 
+
 This is a nonautonomous ODE, whose order can depend on different factors of the shape of the lake basin. It is interesting to note that when modeling a shallow lake such as the Great Salt Lake, it is common to approximate the function of surface area as a function of volume as some function resembling $A = kV^a$ for some $a$ usually less than one. We have chosen, however, to represent the function describing surface area in terms of volume as an approximation of real-life bathymetry data. While this choice will help us to construct a closer approximation to the volume data of the Great Salt Lake, it is worth noting that this decision also makes it slightly more difficult to analyze the ODE explicitly since there is no closed form representation of that equation. 
 
 \subsection{Inflow}
@@ -84,11 +83,12 @@ Accepting that a decrease in flow from the tributaries is a major factor in the 
 we investigated how water diversion and basin depletion have affected the inflow of the lake.
 Unfortunately we were able to find any quantitave answers that suggested a certain function to model the decrease in inflow,
 so we decided to incorporate a simple linear decrease to the inflow function to model increased tributaroy depletion over the two decades.
-The graph of inflow data and the fitted function are shown in Figure $\ref{fig:inflow1}$.
+The graph of inflow data and the fitted function are shown in Figure~\ref{fig:inflow}.
+
 \begin{figure}[h]
-  \includegraphics[width=\linewidth]{inflow.png}
+  \includegraphics[width=\linewidth]{basic_inflow.png}
   \caption{Inflow function}
-  \label{fig:inflow1}
+  \label{fig:inflow}
 \end{figure}
 
 \subsection{Outflow}
