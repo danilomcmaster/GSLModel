@@ -51,8 +51,22 @@ def get_vp_salinity_df(path="./data/vp-salinity.csv"):
 def vp_reduction(salinity, df):
     return np.interp(salinity, df["salinity"], df["vp_reduction"])
 
-def salinity(volume):
-    return 1230618833073.342*(1/volume) + 171886.23798781837*(volume**(-1/3))
+# def salinity(volume):
+#     return 1230618833073.342*(1/volume) + 171886.23798781837*(volume**(-1/3))
+
+def salinity_n(volume):
+    return 662924936948.8833*(1/volume) + 462860.60460320744*(volume**(-1/3))
+
+def salinity_s(volume):
+    return 1564606058225.5437*(1/volume) + -4334.001932641948*(volume**(-1/3))
+
+# north to south surface area ratio
+ratio = 0.615
+
+def vp_reduction(volume, df):
+    sal_n = salinity_n(volume)
+    sal_s = salinity_s(volume)
+    return ratio*np.interp(sal_n, df["salinity"], df["vp_reduction"]) + (1 - ratio)*np.interp(sal_s, df["salinity"], df["vp_reduction"])
 
 #basic inflow function
 def basic_inflow(x, t):
