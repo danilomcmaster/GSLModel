@@ -75,8 +75,8 @@ This is a nonautonomous ODE, whose order can depend on different factors of the 
 
 \subsection{Inflow}
 There are three main tributaries that flow into the Great Salt Lake. For this model, 
-we decide for the inflow $I(t)$ to be a sum of the volume passing from each tributary, recorded daily near the mouth of each from 1998 to the present.
-To derive a single, analytical function that can model this data, we noted its periodic nature, and made the decision to model it as a sum of two sinusoidal functions, and use scipy.optimize.curve\_fit to fit amplitude, frequency, and phase parameters.
+we decide that the inflow, $I(t)$, is a sum of the volume passing from each tributary, recorded daily near the mouth of each from 1998 to the present, and of precipitation multiplied by the surface area of the lake.
+To derive a single, analytical function that can model the inflow from rivers, we noted its periodic nature, and made the decision to model it as a sum of two sinusoidal functions, and use scipy.optimize.curve\_fit to fit amplitude, frequency, and phase parameters. We similarly fit a sinusoidal function to precipitation data recorded at two different weather stations around the lake.
 
 
 Accepting that a decrease in flow from the tributaries is a major factor in the shrinking of the Great Salt Lake,
