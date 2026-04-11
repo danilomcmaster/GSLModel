@@ -39,10 +39,18 @@ We derived a model to describe the change in volume of the Great Salt Lake over 
 This is a nonautonomous ODE, whose order can depend on different factors of the shape of the lake basin. It is interesting to note that when modeling a shallow lake such as the Great Salt Lake, it is common to approximate the function of surface area as a function of volume as some function resembling $A = kV^a$ for some $a$ usually less than one. We have chosen, however, to represent the function describing surface area in terms of volume as an approximation of real-life bathymetry data. While this choice will help us to construct a closer approximation to the volume data of the Great Salt Lake, it is worth noting that this decision also makes it slightly more difficult to analyze the ODE explicitly since there is no closed form representation of that equation. 
 
 \subsection{Inflow}
-To get a function for the volume of water going into the lake $(I(t))$, we looked at past inflow data from 1998 to present and used scipy.optimize.curve\_fit to fit a sinusoidal function to the data. The graph of inflow data and the fitted function are shown in Figure $\ref{fig:inflow1}$.
+There are three main tributaries that flow into the Great Salt Lake. For this model, 
+we decide for the inflow $I(t)$ to be a sum of the volume passing from each tributary, recorded daily near the mouth of each from 1998 to the present.
+To derive a single, analytical function that can model this data, we noted its periodic nature, and made the decision to model it as a sum of two sinusoidal functions, and use scipy.optimize.curve\_fit to fit amplitude, frequency, and phase parameters.
 
+
+Accepting that a decrease in flow from the tributaries is a major factor in the shrinking of the Great Salt Lake,
+we investigated how water diversion and basin depletion have affected the inflow of the lake.
+Unfortunately we were able to find any quantitave answers that suggested a certain function to model the decrease in inflow,
+so we decided to incorporate a simple linear decrease to the inflow function to model increased tributaroy depletion over the two decades.
+The graph of inflow data and the fitted function are shown in Figure $\ref{fig:inflow1}$.
 \begin{figure}[h]
-  \includegraphics[width=\linewidth]{basic_inflow.png}
+  \includegraphics[width=\linewidth]{inflow.png}
   \caption{Inflow function}
   \label{fig:inflow1}
 \end{figure}
