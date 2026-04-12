@@ -76,7 +76,8 @@ This is a nonautonomous ODE, whose order can depend on different factors of the 
 \subsection{Inflow}
 There are three main tributaries that flow into the Great Salt Lake. For this model, 
 we decide that the inflow, $I(t)$, is a sum of the volume passing from each tributary, recorded daily near the mouth of each from 1998 to the present, and of precipitation multiplied by the surface area of the lake.
-To derive a single, analytical function that can model the inflow from rivers, we noted its periodic nature, and made the decision to model it as a sum of two sinusoidal functions, and use scipy.optimize.curve\_fit to fit amplitude, frequency, and phase parameters. We similarly fit a sinusoidal function to precipitation data recorded at two different weather stations around the lake.
+To derive a single, analytical function that can model the inflow from rivers, we noted its periodic nature, and made the decision to model it as a sum of two sinusoidal functions, and use scipy.optimize.curve\_fit to fit amplitude, frequency, and phase parameters. 
+We similarly fit a sinusoidal function multiplied by the surface area of the lake to precipitation data recorded at two different weather stations around the lake.
 
 
 Accepting that a decrease in flow from the tributaries is a major factor in the shrinking of the Great Salt Lake,
@@ -84,6 +85,17 @@ we investigated how water diversion and basin depletion have affected the inflow
 Unfortunately we were able to find any quantitave answers that suggested a certain function to model the decrease in inflow,
 so we decided to incorporate a simple linear decrease to the inflow function to model increased tributaroy depletion over the two decades.
 The graph of inflow data and the fitted function are shown in Figure~\ref{fig:inflow}.
+
+Our final inflow function is:
+\begin{equation*}
+    I_{\text{rivers}}(t) = -28.973\sin(\frac{2\pi t}{365} - 23.202) - 18.437\sin(\frac{4\pi t}{365} -4.293) - 45.523t
+\end{equation*}
+\begin{equation*}
+    I_{\text{precipitation}}(t) = \text{precip}(t) \cdot 3.625E-4\sin(0.0172t + 0.555) + 0.00107
+\end{equation*}
+\begin{equation}
+    I(t) = I_{\text{rivers}}(t) + I_{\text{precipitation}}(t)
+\end{equation}
 
 \begin{figure}[h]
   \includegraphics[width=\linewidth]{basic_inflow.png}
