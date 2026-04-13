@@ -201,13 +201,13 @@ In this model, we used the salinity function stated above, which was found via c
 \begin{aligned}
     S_s(V) &= 1564600000000V^{-1} - 4334^{-\frac{1}{3}} \\
     S_n(V) &= 662925000000V^{-1} + 462860^{-\frac{1}{3}} \\
-    E_d(V, t) &= \max[(0.001 + 0.0005W(t)]0.611 * e^{\frac{17.27T(t)}{T(t) + 237.3}}[1 - r_s^{*}(S_n(V), S_s(V)) - H(t)], 0)  \\
-    r_s^{*}(c_n, c_s) &= [K*r_S(c_n) + (1 - K)*r_S(c_s)] \\
+    E_d(V, t) &= \max[(0.001 + 0.0005W(t)]0.611 * e^{\frac{17.27T(t)}{T(t) + 237.3}}[1 - r_S^{*}(S_n(V), S_s(V)) - H(t)], 0)  \\
+    r_S^{*}(c_n, c_s) &= [K*r_S(c_n) + (1 - K)*r_S(c_s)] \\
     K &= 0.615 \\
     \end{aligned}
 \end{equation}
 
-For model three, we decided to model the salinity of the two halves of the lake separately. In evaporation, salinity is an input in our calculation of vapor pressure. In model 2, we calculated just one estimate of salinity (the weighted average) and used it to calculate vapor pressure. In this model, we calculated two vapor pressure values using salinity from the two different halves of the lake; we then took a weighted average (weight $K$ is the average ratio of surface area of the north arm of the lake to the surface area of the south arm) of these vapor pressure reductions to use in our evaporation equation.
+For model 3, we decided to model the salinity of the two halves of the lake separately. In model 2, we calculated just one estimate of salinity and used it to get percent reduction in vapor pressure. In this model, we calculated two salinity values: one for the southern part of the lake, $S_s(V)$, and one for the northern part of the lake, $S_n(V)$. We then took a weighted average (weight $K$ is the average ratio of surface area of the north arm of the lake to the surface area of the south arm) of the percent reduction in vapor pressure of these two salinity's to use in our evaporation equation. See Equation 4 for these equations. 
 
 The results of this change are shown in Figure~\ref{fig:model_3}. This change to evaporation caused our volume predictions, both with fitted inflow and empirical inflow, to follow the historical volume more closely. 
 
