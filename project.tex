@@ -65,7 +65,7 @@ For each of these component variables, we collected real world data on which to 
 
 \begin{enumerate}
 \item Interpolated functions - These use the exact values of the empirical data, and connect each point with a line. These were primarily used to compare the trajectory of our ODE with historical volume data given an initial value.
-\item Fitted functions - With the exception of salinity, we approximated these functions using periodic functions fitted to the empirical data using scipy.optimize.curve\_fit (we did also use a fourier transform to fit a temperature function, but this was not used for any of the predictions). Salinity was fit to a function of the form $C_1V^{-1} + C_2V^{-1/3}$ also using the curve\_fit function. The equations for these fitted functions appear below and a plot of their behavior on a one-year interval also appears below in \ref{Figure 1}{Figure 1}. 
+\item Fitted functions - With the exception of salinity, we approximated these functions using periodic functions fitted to the empirical data using scipy.optimize.curve\_fit (we did also use a fourier transform to fit a temperature function, but this was not used for any of the predictions). Salinity was fit to a function of the form $C_1V^{-1} + C_2V^{-1/3}$ also using the curve\_fit function. The equations for these fitted functions appear below and a plot of their behavior on a one-year interval also appears below in Figure~\ref{fig:autonomous} and Figure ~\ref{fig:nonautonomous}. 
 \item Monte Carlo simulation - Precipitation and inflow exhibited random behavior with large variance that was difficult to capture with a simple function. We used a Monte Carlo simulation to be able to simulate this behavior and achieve more accurate prediction.
 \end{enumerate}
 
@@ -85,21 +85,26 @@ For each of these component variables, we collected real world data on which to 
 
 \begin{figure}[h!]
 \centering
-\caption{Plots of each of the periodic fitted functions on a one-year interval}
-\label{Figure 1}
+\caption{Plots of each of the periodic fitted autonomous functions on a one-year interval}
+\label{fig:autonomous}
 \begin{tabular}{ccc}
-  \includegraphics[width=0.3\textwidth]{./images/Vol_no_salinity_empirical_inflow.png} &
-  \includegraphics[width=0.3\textwidth]{./images/basic_inflow_1.png} &
-  \includegraphics[width=0.3\textwidth]{./images/bathymetry_graph.jpg} \\
+  \includegraphics[width=0.3\textwidth]{./images/evaporation_model.png} &
+  \includegraphics[width=0.3\textwidth]{./images/basic_inflow_1.png} & \includegraphics[width=0.3\textwidth]{./images/precipitation_fit.png} \\
 
   \includegraphics[width=0.3\textwidth]{./images/temperature_model.png} &
-  \includegraphics[width=0.3\textwidth]{./images/humidity_model.png} &
-  \includegraphics[width=0.3\textwidth]{./images/surface_salinity_model.jpg} \\
+  \includegraphics[width=0.3\textwidth]{./images/humidity_model.png} & \includegraphics[width=0.3\textwidth]{./images/wind_speed_model.png} 
 
-  \includegraphics[width=0.3\textwidth]{./images/evaporation_model.png} &
-  \includegraphics[width=0.3\textwidth]{./images/precipitation_fit.png} &
-  \includegraphics[width=0.3\textwidth]{./images/wind_speed_model.png}
 \end{tabular}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \caption{Plots of each of the fitted non-autonomous functions}
+    \label{fig:nonautonomous}
+    \begin{tabular}{cc}
+        \includegraphics[width=0.3\textwidth]{./images/bathymetry_graph.jpg} &
+        \includegraphics[width=0.3\textwidth]{./images/surface_salinity_model.jpg} 
+    \end{tabular}
 \end{figure}
 
 
@@ -115,21 +120,34 @@ Accepting that a decrease in flow from the tributaries is a major factor in the 
 we investigated how water diversion and basin depletion have affected the inflow of the lake.
 Unfortunately we were able to find any quantitative answers that suggested a certain function to model the decrease in inflow,
 so we decided to incorporate a simple linear decrease to the inflow function to model increased tributary depletion over the two decades.
-The graph of inflow data and the fitted function are shown in Figure~\ref{fig:inflow}.
+The graph of inflow data and the fitted function are shown to the left in Figure~\ref{fig:inflow}.
+
+
+Unfortunately, modeling the inflow from the tributary rivers as purely periodic does not capture its true behavior.
+Random spikes in inflow from the rivers can be better predicted by monte carlo simulations which attempt to simulate a similar sort of random process, thus making predicted results resemble actual expected inflows much more closely. The resulting approximation can be seen on the right of Figure~\ref{fig:inflow}
 
 \begin{figure}[h]
-  \includegraphics[width=\linewidth]{./images/basic_inflow.png}
-  \caption{Inflow function}
+  \begin{tabular}{cc}
+    \includegraphics[width=0.5\linewidth]{./images/basic_inflow.png} & \includegraphics[width=0.5\linewidth]{./images/simulated_10year_inflow_model.png}
+  \end{tabular}
+  \caption{Inflow functions}
   \label{fig:inflow}
 \end{figure}
 
 \subsection{Outflow}
-While we initially considered evaporation as a constant, the underlying data shows clear periodic fluctuations which we concluded were due to seasons. To account for the seasonality of temperature and humidity, we intend to model the evaporation coefficient using a sine function.
-\begin{equation}
-    k(t) = A \cdot \sin\left(\frac{2\pi}{12}t + \phi\right) + C
-\end{equation}
-This allows us to simulate the peak evaporation of the hot summer months and the reduced loss during winter. Similarly, this periodic approach helps explain why the lake volume follows a downward trend, consistently losing ground over years, but showing temporary recovery during the spring runoff.
+While we initially considered evaporation as a constant, the primary limitation of a constant-rate model is its inability to account for the periodic fluctuations observed in historical lake data. To bridge this gap, we transitioned to a mass transfer model based on Dalton’s Law. This decision stems from the physical reality that evaporation is not a static loss but a dynamic process driven by the vapor pressure deficit which is the difference between the moisture the air can hold and the moisture currently present.
 
+By grounding our model in Dalton’s Law, we define the evaporation rate ($E$) as a function of environmental drivers:
+
+\begin{equation}
+E = f(u) \cdot (e_s - e_a)
+\end{equation}
+
+Where $f(u)$ represents a wind-dependent function that models the removal of saturated air from the lake surface. $(e_s - e_a)$ represents the atmospheric pull on lake water, dictated by temperature and humidity.
+
+To capture the impact of seasonal cycles, we treat the evaporation rate as a time-dependent variable within our Ordinary Differential Equation. The resulting model accounts for the downward multi-year trend while allowing for the temporary recovery phases observed during spring runoffs.
+
+To approximate these meteorological drivers, we utilize a sine-wave function for the evaporation coefficient. By incorporating this periodic function, the model becomes responsive to time. While this mass transfer framework is a significant mechanical upgrade from a constant-rate assumption, its current iteration relies on simulated weather parameters rather than historical climate datasets. 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{./images/total_lake_volume_over_time.png}
@@ -175,7 +193,7 @@ In our next model, we decided to include salinity; see $S(V)$ in Equation 1 for 
 
 \begin{equation}
     E_d(V, t) = \max[(0.001 + 0.0005W(t)]0.611 * e^{\frac{17.27T(t)}{T(t) + 237.3}}[1 - r_S(S(V)) - H(t)], 0)  \\
-\end{equation}
+\end{equation} 
 
 Where $r_s(c)$ is the percent reduction in vapor pressure (compared to the vapor pressure of freshwater at the same temperature) as a function of salinity. This function is unique to the Great Salt Lake's exact makeup of salts. Raoult's Law is an equation for reduction in vapor pressure as a function of salinity, but it's only accurate for relatively low concentrations of salt. Thus the reduction in vapor pressure in the hypersaline water of the GSL cannot be predicted by Raoult's Law. Dickson et al. reports on the ratio for water samples from the GSL at various brine concentrations calculated empirically. This data was limited in the range of brine concentrations tested, so we needed to extend the data into a function. We fit a logistic function to the residuals of the data after subtracting the prediction from Raoult's Law, which resulted in the model shown in Figure~\ref{fig:vapor_pressure_reduc}.
 
@@ -186,7 +204,7 @@ Where $r_s(c)$ is the percent reduction in vapor pressure (compared to the vapor
     \label{fig:vapor_pressure_reduc}
 \end{figure}
 
-In this model, we used the salinity function stated above, which was found via curve fitting to salinity data. In Figure~\ref{fig:model_2}, we plot this model using both fitted functions for inflow and empirical inflow.  
+In this model, we used the salinity function stated above, which was found via curve fitting to salinity data. In Figure~\ref{fig:model_2}, we plot this model using both fitted functions for inflow and empirical inflow.
 
 \begin{figure}[h]
     \centering
