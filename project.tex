@@ -135,12 +135,19 @@ Random spikes in inflow from the rivers can be better predicted by monte carlo s
 \end{figure}
 
 \subsection{Outflow}
-While we initially considered evaporation as a constant, the underlying data shows clear periodic fluctuations which we concluded were due to seasons. To account for the seasonality of temperature and humidity, we intend to model the evaporation coefficient using a sine function.
-\begin{equation}
-    k(t) = A \cdot \sin\left(\frac{2\pi}{12}t + \phi\right) + C
-\end{equation}
-This allows us to simulate the peak evaporation of the hot summer months and the reduced loss during winter. Similarly, this periodic approach helps explain why the lake volume follows a downward trend, consistently losing ground over years, but showing temporary recovery during the spring runoff.
+While we initially considered evaporation as a constant, the primary limitation of a constant-rate model is its inability to account for the periodic fluctuations observed in historical lake data. To bridge this gap, we transitioned to a mass transfer model based on Dalton’s Law. This decision stems from the physical reality that evaporation is not a static loss but a dynamic process driven by the vapor pressure deficit which is the difference between the moisture the air can hold and the moisture currently present.
 
+By grounding our model in Dalton’s Law, we define the evaporation rate ($E$) as a function of environmental drivers:
+
+\begin{equation}
+E = f(u) \cdot (e_s - e_a)
+\end{equation}
+
+Where $f(u)$ represents a wind-dependent function that models the removal of saturated air from the lake surface. $(e_s - e_a)$ represents the atmospheric pull on lake water, dictated by temperature and humidity.
+
+To capture the impact of seasonal cycles, we treat the evaporation rate as a time-dependent variable within our Ordinary Differential Equation. The resulting model accounts for the downward multi-year trend while allowing for the temporary recovery phases observed during spring runoffs.
+
+To approximate these meteorological drivers, we utilize a sine-wave function for the evaporation coefficient. By incorporating this periodic function, the model becomes responsive to time. While this mass transfer framework is a significant mechanical upgrade from a constant-rate assumption, its current iteration relies on simulated weather parameters rather than historical climate datasets. 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{./images/total_lake_volume_over_time.png}
