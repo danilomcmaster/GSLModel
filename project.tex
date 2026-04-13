@@ -3,6 +3,7 @@
 \usepackage{graphicx} % Required for inserting images
 \usepackage{amssymb, amsmath, amsthm}
 \usepackage{geometry}
+\usepackage{hyperref}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{example}{Example}
@@ -65,7 +66,7 @@ For each of these component variables, we collected real world data on which to 
 \begin{enumerate}
 \item Interpolated functions - These use the exact values of the empirical data, and connect each point with a line. These were primarily used to compare the trajectory of our ODE with historical volume data given an initial value.
 \item Fitted functions - With the exception of salinity, we approximated these functions using periodic functions fitted to the empirical data using scipy.optimize.curve\_fit (we did also use a fourier transform to fit a temperature function, but this was not used for any of the predictions). Salinity was fit to a function of the form $C_1V^{-1} + C_2V^{-1/3}$ also using the curve\_fit function. The equations for these fitted functions appear below and a plot of their behavior on a one-year interval also appears below in \ref{Figure 1}{Figure 1}. 
-\item Monte Carlo
+\item Monte Carlo simulation - Precipitation and inflow exhibited random behavior with large variance that was difficult to capture with a simple function. We used a Monte Carlo simulation to be able to simulate this behavior and achieve more accurate prediction.
 \end{enumerate}
 
 \begin{equation}
@@ -87,22 +88,22 @@ For each of these component variables, we collected real world data on which to 
 \caption{Plots of each of the periodic fitted functions on a one-year interval}
 \label{Figure 1}
 \begin{tabular}{ccc}
-  \includegraphics[width=0.3\textwidth]{Vol_no_salinity_empirical_inflow.png} &
-  \includegraphics[width=0.3\textwidth]{basic_inflow_1.png} &
-  \includegraphics[width=0.3\textwidth]{bathymetry_graph.jpg} \\
+  \includegraphics[width=0.3\textwidth]{./images/Vol_no_salinity_empirical_inflow.png} &
+  \includegraphics[width=0.3\textwidth]{./images/basic_inflow_1.png} &
+  \includegraphics[width=0.3\textwidth]{./images/bathymetry_graph.jpg} \\
 
-  \includegraphics[width=0.3\textwidth]{temperature_model.png} &
-  \includegraphics[width=0.3\textwidth]{humidity_model.png} &
-  \includegraphics[width=0.3\textwidth]{surface_salinity_model.jpg} \\
+  \includegraphics[width=0.3\textwidth]{./images/temperature_model.png} &
+  \includegraphics[width=0.3\textwidth]{./images/humidity_model.png} &
+  \includegraphics[width=0.3\textwidth]{./images/surface_salinity_model.jpg} \\
 
-  \includegraphics[width=0.3\textwidth]{evaporation_model.png} &
-  \includegraphics[width=0.3\textwidth]{precipitation_fit.png} &
-  \includegraphics[width=0.3\textwidth]{wind_speed_model.png}
+  \includegraphics[width=0.3\textwidth]{./images/evaporation_model.png} &
+  \includegraphics[width=0.3\textwidth]{./images/precipitation_fit.png} &
+  \includegraphics[width=0.3\textwidth]{./images/wind_speed_model.png}
 \end{tabular}
 \end{figure}
 
 
-This is a nonautonomous ODE, whose order can depend on different factors of the shape of the lake basin. It is interesting to note that when modeling a shallow lake such as the Great Salt Lake, it is common to approximate the function of surface area as a function of volume as some function resembling $A = kV^a$ for some $a$ usually less than one. We have chosen, however, to represent the function describing surface area in terms of volume as an approximation of real-life bathymetry data. While this choice will help us to construct a closer approximation to the volume data of the Great Salt Lake, it is worth noting that this decision also makes it slightly more difficult to analyze the ODE explicitly since there is no closed form representation of that equation. 
+This is a non-autonomous ODE, whose order can depend on different factors of the shape of the lake basin. It is interesting to note that when modeling a shallow lake such as the Great Salt Lake, it is common to approximate the function of surface area as a function of volume as some function resembling $A = kV^a$ for some $a$ usually less than one. We have chosen, however, to represent the function describing surface area in terms of volume as an approximation of real-life bathymetry data. While this choice will help us to construct a closer approximation to the volume data of the Great Salt Lake, it is worth noting that this decision also makes it slightly more difficult to analyze the ODE explicitly since there is no closed form representation of that equation. 
 
 \subsection{Inflow}
 There are three main tributaries that flow into the Great Salt Lake. For this model, 
@@ -112,12 +113,12 @@ To derive a single, analytical function that can model the inflow from rivers, w
 
 Accepting that a decrease in flow from the tributaries is a major factor in the shrinking of the Great Salt Lake,
 we investigated how water diversion and basin depletion have affected the inflow of the lake.
-Unfortunately we were able to find any quantitave answers that suggested a certain function to model the decrease in inflow,
-so we decided to incorporate a simple linear decrease to the inflow function to model increased tributaroy depletion over the two decades.
+Unfortunately we were able to find any quantitative answers that suggested a certain function to model the decrease in inflow,
+so we decided to incorporate a simple linear decrease to the inflow function to model increased tributary depletion over the two decades.
 The graph of inflow data and the fitted function are shown in Figure~\ref{fig:inflow}.
 
 \begin{figure}[h]
-  \includegraphics[width=\linewidth]{basic_inflow.png}
+  \includegraphics[width=\linewidth]{./images/basic_inflow.png}
   \caption{Inflow function}
   \label{fig:inflow}
 \end{figure}
@@ -131,7 +132,7 @@ This allows us to simulate the peak evaporation of the hot summer months and the
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{total_lake_volume_over_time.png}
+    \includegraphics[width=0.8\textwidth]{./images/total_lake_volume_over_time.png}
     \caption{Total Lake Volume over Time of the Great Salt Lake}
     \label{fig:lake_volume}
 \end{figure}
@@ -145,7 +146,7 @@ To capture the way salinity of the water at the surface changes with volume, we 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{salinity.jpg}
+    \includegraphics[width=0.8\textwidth]{./images/salinity.jpg}
     \caption{Surface Salinity Data vs. Elevation for the Great Salt Lake}
     \label{fig:surface_salinity}
 \end{figure}
@@ -163,8 +164,8 @@ The plot on the right however, uses empirical inflow data and thus, better model
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{Vol_pred_fitted_no_salt.png}
-    \includegraphics[width=0.4\textwidth]{Vol_pred_empirical_no_salt.png}
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_fitted_no_salt.png}
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_empirical_no_salt.png}
     \caption{Model 1 with fitted sine functions for both inflow from rivers and precipitation}
     \label{fig:model_1}
 \end{figure}
@@ -181,8 +182,8 @@ In our next model, we decided to include salinity. As stated in the introduction
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{Vol_pred_fitted_salt.png}
-    \includegraphics[width=0.4\textwidth]{Vol_pred_empirical_salt.png}
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_fitted_salt.png}
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_empirical_salt.png}
     \caption{Model 2 with weighted average salinity}
     \label{fig:model_2}
 \end{figure}
@@ -193,8 +194,8 @@ For model three, we decided to model the salinity of the two halves of the lake 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{Vol_pred_fitted_salt_improved.png}
-    \includegraphics[width=0.4\textwidth]{Vol_pred_empirical_salt_improved.png}
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_fitted_salt_improved.png}
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_empirical_salt_improved.png}
     \caption{Model 3}
     \label{fig:model_3}
 \end{figure}
@@ -207,8 +208,8 @@ Interestingly, this model shows the volume of the lake increasing and stabilizin
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{future_preds.png}
-    \includegraphics[width=0.4\textwidth]{future_preds_human_usage.png}
+    \includegraphics[width=0.4\textwidth]{./images/future_preds.png}
+    \includegraphics[width=0.4\textwidth]{./images/future_preds_human_usage.png}
     \caption{Model 4}
     \label{fig:model_4}
 \end{figure}
