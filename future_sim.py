@@ -274,17 +274,17 @@ def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=F
 
 if __name__ == "__main__":
     intervention_level_interp_dict = {0: "No Intervention", 1: "Additional 250 KAF/year", 2: "Additional 800 KAF/year"}
-    num_sims = 50
+    num_sims = 500
     sim_years = 10
     inflow_sims = generate_inflow_sims(num_sims, sim_years)
     intervention_levels = [0, 1, 2]
     results_strings = []
     results = {}
     for level in intervention_levels:
-        string, dict = simulate(num_sims, sim_years, inflow_sims, intervention_level=level, plot=True)
+        string, dict = simulate(num_sims, sim_years, inflow_sims, intervention_level=level, plot=False)
         results_strings.append(string)
         results[intervention_level_interp_dict[level]] = dict 
-    print(results, results_strings)
+    print(results)
 
 ## RESULTS (including serious adverse category)
 # In simulations for the next 10 years with intervention level: 0, Healthy Outcome count: 0/30, Transitory Outcome count: 1/30, Adverse Effects Outcome count: 7/30, Serious Adverse Effects Outcome count: 22/30
@@ -299,3 +299,4 @@ if __name__ == "__main__":
 # In simulations for the next 5 years, Healthy Level Obtained count: 0/100, No Adverse Effect Level Obtained count: 9/100, Unhealthy Level Maintained count: 91/100
 # In simulations for the next 10 years with intervention level: 1, Healthy Level Obtained count: 1/20, No Adverse Effect Level Obtained count: 9/20, Unhealthy Level Maintained count: 10/20
 # In simulations for the next 10 years with intervention level: 2, Healthy Level Obtained count: 6/30, No Adverse Effect Level Obtained count: 21/30, Unhealthy Level Maintained count: 3/30
+# result_dict = {'No Intervention': {'Healthy': 0.0, 'Transitory': 0.038, 'Adverse Effects': 0.314, 'Severe Adverse Effects': 0.648}, 'Additional 250 KAF/year': {'Healthy': 0.004, 'Transitory': 0.114, 'Adverse Effects': 0.542, 'Severe Adverse Effects': 0.34}, 'Additional 800 KAF/year': {'Healthy': 0.244, 'Transitory': 0.638, 'Adverse Effects': 0.118, 'Severe Adverse Effects': 0.0}}
