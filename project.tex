@@ -1,5 +1,4 @@
 
-
 \documentclass[12pt]{article}
 \usepackage{graphicx} % Required for inserting images
 \usepackage{amssymb, amsmath, amsthm}
@@ -31,9 +30,9 @@ In this paper, we develop a differential equation to model the dynamics of the G
 \section{Introduction}
 The Great Salt Lake (GSL) is of great ecological importance to Utah's environment. In recent years, its footprint has been shrinking. Understanding the dynamics of the lake, specifically the rate at which it is shrinking and what it would take to reverse that shrinking, will allow researchers and citizens of Utah to understand how much time the Great Salt Lake has left. In this paper, we design and analyze a simplified model to understand the dynamics of the Great Salt Lake using an Ordinary Differential Equation. The differential equation is comprised of an inflow function and an outflow function. This project investigates how changes in the inflow and outflow of the Lake will affect its overall volume, including the effect of human usage. 
 
-Lake dynamics and the GSL specifically have been the subject of research by ecologists for the better part of a century. State-of-the-art models of the Great Salt Lake separate the lake into its North and South arms and modeling the South arm as two distinct layers: the Upper Brine Layer and a saltier Deep Brine Layer that form due to the higher density of hypersaline water. Water exchange between the arms of the lake is understood to occur at multiple bays, with individual rates that depend on the elevation of the lake and salinity gradients between the arms of the lake (Dunn 2025 et al). In this model, we treat the lake as a homogeneous body of water, aggregating the salinities of the two arms of the lake by averaging them over surface area. While this is unconventional, it simplifies the problem significantly, allowing us to focus on modeling other features in more detail. 
+Lake dynamics, and the GSL specifically, have been the subject of research by ecologists for the better part of a century. State-of-the-art models of the Great Salt Lake separate the lake into its North and South arms and model the South arm as two distinct layers: the Upper Brine Layer and a saltier Deep Brine Layer that forms due to the higher density of hypersaline water. Water exchange between the arms of the lake is understood to occur at multiple bays, with individual rates that depend on the elevation of the lake and salinity gradients between the arms of the lake (Dunn 2025 et al). In this model, we treat the lake as a homogeneous body of water, aggregating the salinities of the two arms of the lake by averaging them over surface area. While this is unconventional, it simplifies the problem significantly, allowing us to focus on modeling other features in more detail. 
 
-Our goal in modeling was to investigate the simplest possible model that is still able to capture the inherent nature of the system. According to sensitivity analysis of the system by Mohammed et al., the volume of the lake is most sensitive to changes in inflow from streams and evaporation rate (Mohammed and Tarboton, 2012). Note that inflow from streams is significantly impacted by water diversion for farming and other human usage, so this is the primary control mechanism available to legislation that aims to preserve the lake. Mohammed et all. also found that the variables with the most significant stabilizing effects on water volume are lake surface area and salinity. Both of these variables lead to decreased evaporation when the lake is at a low volume and increased evaporation when the lake is at a high volume, mitigating extreme changes in lake volume. The results of this paper motivate the primary variables we focus on modeling and analyzing, which are: inflow, evaporation, and salinity. We calculate evaporation rate while accounting for the effect of salinity required using a modified Penman equation (standard practice in lake dynamics, see Mohommed et. al, Dunn et al.), which requires choosing functions for humidity and temperature. We also include a term for precipitation to increase the realism of our model and better explain the historical change in lake volume. 
+Our goal in modeling was to investigate the simplest possible model that is still able to capture the inherent nature of the system. According to sensitivity analysis of the system by Mohammed et al., the volume of the lake is most sensitive to changes in inflow from streams and evaporation rate \cite{mohammed2012}. Note that inflow from streams is significantly impacted by water diversion for farming and other human usage, so this is the primary control mechanism available to legislation that aims to preserve the lake. Mohammed et all. also found that the variables with the most significant stabilizing effects on water volume are lake surface area and salinity. Both of these variables lead to decreased evaporation when the lake is at a low volume and increased evaporation when the lake is at a high volume, mitigating extreme changes in lake volume. The results of this paper motivate the primary variables we focus on modeling and analyzing, which are: inflow, evaporation, and salinity. We calculate evaporation rate while accounting for the effect of salinity required using a modified Penman equation (standard practice in lake dynamics, see Mohommed et. al, Dunn et al.), which requires choosing functions for humidity and temperature. We also include a term for precipitation to increase the realism of our model and better explain the historical change in lake volume. 
 
 The function describing the historical volume of the lake can be most accurately recreated using actual data for precipitation, humidity, and temperature, because this method accounts for the variation of the lake due to unpredictable weather effects. However, this method is unable to produce projections for the future of the lake, because exact data for future temperature and precipitation are unknown. Some papers address this using Monte Carlo methods, where possible weather outcomes are simulated using thousands of random draws of distributions that can be derived from historical data (Tarboton 2026 et al). Such simulations allow researchers to report credible intervals of simulation results for lake volume. In this project, for the sake of simplicity, we opted for a deterministic method where the future of the lake is simulated using interpolated periodic functions for weather variables. Thus our simulations should be interpreted as point estimates for the progression of the lake from some initial conditions assuming it experiences "average" seasonal precipitation, temperature, and humidity. 
 
@@ -59,6 +58,14 @@ We derived a model to describe the change in volume of the Great Salt Lake over 
     \caption{State variables of the model \eqref{eq:model}}
 \end{table}
 
+For each of these component variables, we collected real world data on which to define our differential equation. Temperature, Humidity, Precipitation Depth, and Wind Speed were all gathered from \href{https://www.ncei.noaa.gov/access/search/data-search/global-summary-of-the-day}{National Centers for Environmental Information}. We extracted the data from data stations at Eagle Range on the west side of the lake, the Salt Lake International Airport on the south side of the lake, and Ogden on the east side of the lake. We averaged the data to approximate the values of these variables around the lake. We then defined functions we used to solve the system in the following ways:
+
+\begin{enumerate}
+\item Interpolated functions - These use the exact values of the empirical data, and connect each point with a line. These were primarily used to compare the trajectory of our ODE with historical volume data given an initial value.
+\item Fitted functions - With the exception of salinity, we approximated these functions using periodic functions fitted to the empirical data using scipy.optimize.curve\_fit (we did also use a fourier transform to fit a temperature function, but this was not used for any of the predictions). Salinity was fit to a function of the form $C_1V^{-1} + C_2V^{-1/3}$ also using the curve\_fit function. The equations for these fitted functions appear below and a plot of their behavior on a one-year interval also appears below in \ref{Figure 1}{Figure 1}. 
+\item Monte Carlo
+\end{enumerate}
+
 \begin{equation}
     \begin{aligned}
     \dfrac{dV}{dt} &= I_s(t) + [P_d(V, t) - E_d(V, t)]A(V) \\
@@ -75,6 +82,8 @@ We derived a model to describe the change in volume of the Great Salt Lake over 
 
 \begin{figure}[h!]
 \centering
+\caption{Plots of each of the periodic fitted functions on a one-year interval}
+\label{Figure 1}
 \begin{tabular}{ccc}
   \includegraphics[width=0.3\textwidth]{Vol_no_salinity_empirical_inflow.png} &
   \includegraphics[width=0.3\textwidth]{basic_inflow_1.png} &
@@ -88,7 +97,6 @@ We derived a model to describe the change in volume of the Great Salt Lake over 
   \includegraphics[width=0.3\textwidth]{precipitation_fit.png} &
   \includegraphics[width=0.3\textwidth]{wind_speed_model.png}
 \end{tabular}
-\caption{Plots of each of the periodic fitted functions on a one-year interval}
 \end{figure}
 
 
@@ -96,9 +104,8 @@ This is a nonautonomous ODE, whose order can depend on different factors of the 
 
 \subsection{Inflow}
 There are three main tributaries that flow into the Great Salt Lake. For this model, 
-we decide that the inflow, $I(t)$, is a sum of the volume passing from each tributary, recorded daily near the mouth of each from 1998 to the present, and of precipitation multiplied by the surface area of the lake.
-To derive a single, analytical function that can model the inflow from rivers, we noted its periodic nature, and made the decision to model it as a sum of two sinusoidal functions, and use scipy.optimize.curve\_fit to fit amplitude, frequency, and phase parameters. 
-We similarly fit a sinusoidal function multiplied by the surface area of the lake to precipitation data recorded at two different weather stations around the lake.
+we decided that the inflow, $I(t)$, is a sum of the volume passing from each tributary, recorded daily near the mouth of each from 1998 to the present, and of precipitation multiplied by the surface area of the lake.
+To derive a single, analytical function that can model the inflow from rivers, we noted its periodic nature, and made the decision to model it as a sum of two sinusoidal functions, and use scipy.optimize.curve\_fit to fit amplitude, frequency, and phase parameters. We similarly fit a sinusoidal function to precipitation data recorded at two different weather stations around the lake.
 
 
 Accepting that a decrease in flow from the tributaries is a major factor in the shrinking of the Great Salt Lake,
@@ -106,17 +113,6 @@ we investigated how water diversion and basin depletion have affected the inflow
 Unfortunately we were able to find any quantitave answers that suggested a certain function to model the decrease in inflow,
 so we decided to incorporate a simple linear decrease to the inflow function to model increased tributaroy depletion over the two decades.
 The graph of inflow data and the fitted function are shown in Figure~\ref{fig:inflow}.
-
-Our final inflow function is:
-\begin{equation*}
-    I_{\text{rivers}}(t) = -28.973\sin(\frac{2\pi t}{365} - 23.202) - 18.437\sin(\frac{4\pi t}{365} -4.293) - 45.523t
-\end{equation*}
-\begin{equation*}
-    I_{\text{precipitation}}(t) = \text{precip}(t) \cdot 3.625E-4\sin(0.0172t + 0.555) + 0.00107
-\end{equation*}
-\begin{equation}
-    I(t) = I_{\text{rivers}}(t) + I_{\text{precipitation}}(t)
-\end{equation}
 
 \begin{figure}[h]
   \includegraphics[width=\linewidth]{basic_inflow.png}
@@ -152,39 +148,116 @@ To capture the way salinity of the water at the surface changes with volume, we 
     \label{fig:surface_salinity}
 \end{figure}
 
+\subsection{Models}
+
+We now present our various attempts at modeling the volume of the GSL. We use the python library scipy's method solve\_ivp to numerically solve our differential equation given an initial value for the volume of the lake. We plot our historical solutions against the true volume of the lake starting at January 1st, 2000. For reference, the total lake volume since 1840 is plotted in Figure~\ref{fig:lake_volume}. 
+For each model, we plot it using both our fitted sine functions for inflow and using empirical inflow data. 
+
+\subsubsection{Model 1: No salinity}
+
+We first ran our model assuming a freshwater lake. This increases the rate of evaporation as salinity moderates evaporation. The results are plotted in Figure~\ref{fig:model_1}. The plot on the left uses the fitted sine functions for both inflow from rivers and precipitation. This model lacks the random spikes in inflow, which can be seen in Figure~\ref{fig:inflow}. Because of this, and the lack of salinity, the lake slowly dries up and by about 2014, is completely gone. 
+
+The plot on the right however, uses empirical inflow data and thus, better models the randomness in weather. This model better follows the shape of the true volume curve but because it still lacks salinity, the curve is well below the true volume. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{Vol_pred_fitted_no_salt.png}
+    \includegraphics[width=0.4\textwidth]{Vol_pred_empirical_no_salt.png}
+    \caption{Model 1 with fitted sine functions for both inflow from rivers and precipitation}
+    \label{fig:model_1}
+\end{figure}
+
+    % \centering
+    % \includegraphics[width=0.4\textwidth]{avg_eFGperc.png}\hspace{0.02\textwidth}
+    % \includegraphics[width=0.4\textwidth]{avg_TOVperc.png}
+    % \caption{}
+    % \label{fig:three}
+
+\subsubsection{Model 2: Weighted average of salinity}
+
+In our next model, we decided to include salinity. As stated in the introduction, the lake is split into two halves each with different salinities. In this model, we took a weighted average of those salinities and incorporated them into the evaporation function. In Figure~\ref{fig:model_2}, we plot this model using both fitted functions for inflow and empirical inflow.  
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{Vol_pred_fitted_salt.png}
+    \includegraphics[width=0.4\textwidth]{Vol_pred_empirical_salt.png}
+    \caption{Model 2 with weighted average salinity}
+    \label{fig:model_2}
+\end{figure}
+
+\subsubsection{Model 3: Two halves salinity}
+
+For model three, we decided to model the salinity of the two halves of the lake separately.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{Vol_pred_fitted_salt_improved.png}
+    \includegraphics[width=0.4\textwidth]{Vol_pred_empirical_salt_improved.png}
+    \caption{Model 3}
+    \label{fig:model_3}
+\end{figure}
+
+\subsubsection{Model 4: Future predictions and human usage}
+
+Here, we decided to extend our model to future predictions. We could no longer use empirical historical data; we could only use our fitted functions. The results are show in Figure~\ref{fig:model_4}. We started our future predictions on January 1st, 2026 with the initial value being the volume of the lake on that day. The graph on the left shows our results for just the fitted functions and the graph on the right shows the results with human usage added in. To add in human usage, we reduced inflow by a factor 0.5 to see what would happen to the volume of the lake if half of the water going into the lake was diverted. 
+
+Interestingly, this model shows the volume of the lake increasing and stabilizing at an equilibrium point. Most likely, because of the periodicity of the functions we fit for inflow and evaporation, our differential equation has an equilibrium where our solution stabilizes. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{future_preds.png}
+    \includegraphics[width=0.4\textwidth]{future_preds_human_usage.png}
+    \caption{Model 4}
+    \label{fig:model_4}
+\end{figure}
+
+\subsubsection{Model 5: Future predictions with random inflow spikes}
+
 \section{Results}
 
-\section{Analysis}
 
-\subsection{Nondimensionalization}
 
-We begin our nondimensionalization by introducing the following constants: 
-\begin{itemize}
-\item $V_0$: The typical volume of the lake
-\item $A_0$: The typical area of the lake
-\item $I_0$: The typical inflow of the lake
-\item $E_0$: The typical evaporation rate of the lake.
-\end{itemize}
+\section{Analysis/Conclusions}
 
-We also define new, dimensionless variables $v = \frac{V}{V_0}$ and $\tau = \frac{t}{T}$. With that, we have the conversion $V = vV_0$ and $t = \tau T$. Substituting these variables into our ODE, we have $\frac{V_0}{T}\frac{dv}{d\tau} = I(\tau T) - E(\tau T)A(vV_0)$. We will define a new surface area function $a(v) = \frac{A(vV_0)}{A_0}$. We substitute this into the equation and divide both sides by $I_0$ to get $\frac{V_0}{I_0T}\frac{dv}{d\tau} = \frac{I(\tau T)}{I_0} - \frac{E(\tau T)A_0}{I_0}a(v)$. Setting $T = \frac{V_0}{I_0}$ and defining a new parameter $\gamma = \frac{A_0E_0}{I_0}$, the nondimensionalized equation becomes \[
-\frac{dv}{d\tau} = \frac{I(t)}{I_0} - \gamma\frac{E(t)}{E_0}a(v)
-\]
+% \subsection{Nondimensionalization}
 
-\subsection{Equilibria}
+% We begin our nondimensionalization by introducing the following constants: 
+% \begin{itemize}
+% \item $V_0$: The typical volume of the lake
+% \item $A_0$: The typical area of the lake
+% \item $I_0$: The typical inflow of the lake
+% \item $E_0$: The typical evaporation rate of the lake.
+% \end{itemize}
 
-Assuming typical or average inflow and evaporation rate, $I_0$ and $E_0$ respectively, our new nondimensionalized system becomes $\frac{dv}{d\tau} = 1 - \gamma a(v)$. So, our equilibria occur where $a(v) = \frac{1}{\gamma} = \frac{I_0}{A_0E_0}$. What this tells us, is that assuming a constant inflow and evaporation rate, around the typical rates we would have an equilibrium point around whichever value for volume gives an area of $a(v) = \frac{1}{\gamma}$.
+% We also define new, dimensionless variables $v = \frac{V}{V_0}$ and $\tau = \frac{t}{T}$. With that, we have the conversion $V = vV_0$ and $t = \tau T$. Substituting these variables into our ODE, we have $\frac{V_0}{T}\frac{dv}{d\tau} = I(\tau T) - E(\tau T)A(vV_0)$. We will define a new surface area function $a(v) = \frac{A(vV_0)}{A_0}$. We substitute this into the equation and divide both sides by $I_0$ to get $\frac{V_0}{I_0T}\frac{dv}{d\tau} = \frac{I(\tau T)}{I_0} - \frac{E(\tau T)A_0}{I_0}a(v)$. Setting $T = \frac{V_0}{I_0}$ and defining a new parameter $\gamma = \frac{A_0E_0}{I_0}$, the nondimensionalized equation becomes \[
+% \frac{dv}{d\tau} = \frac{I(t)}{I_0} - \gamma\frac{E(t)}{E_0}a(v)
+% \]
 
-\subsection{Stability Analysis}
+% \subsection{Equilibria}
 
-Since we have an equilibrium for $v*$ where $a(v*) = \frac{1}{\gamma}$, we linearize the system around that equilibrium point to determine its stability. Taking $\frac{dv}{d\tau} = f(v) = 1 - \gamma a(v)$, we have $f'(v) = -\gamma a'(v)$. So, we have two cases: i) if $a'(v) > 0$, then $f'(v) < 0$ and the equilibrium is stable or ii) if $a'(v) < 0$, then $f'(v) > 0$ and the equilibrium is unstable. It is reasonable to assume that $a'(v) > 0$ since surface area should increase as volume increases.
+% Assuming typical or average inflow and evaporation rate, $I_0$ and $E_0$ respectively, our new nondimensionalized system becomes $\frac{dv}{d\tau} = 1 - \gamma a(v)$. So, our equilibria occur where $a(v) = \frac{1}{\gamma} = \frac{I_0}{A_0E_0}$. What this tells us, is that assuming a constant inflow and evaporation rate, around the typical rates we would have an equilibrium point around whichever value for volume gives an area of $a(v) = \frac{1}{\gamma}$.
 
-\section{Conclusions}
+% \subsection{Stability Analysis}
+
+% Since we have an equilibrium for $v*$ where $a(v*) = \frac{1}{\gamma}$, we linearize the system around that equilibrium point to determine its stability. Taking $\frac{dv}{d\tau} = f(v) = 1 - \gamma a(v)$, we have $f'(v) = -\gamma a'(v)$. So, we have two cases: i) if $a'(v) > 0$, then $f'(v) < 0$ and the equilibrium is stable or ii) if $a'(v) < 0$, then $f'(v) > 0$ and the equilibrium is unstable. It is reasonable to assume that $a'(v) > 0$ since surface area should increase as volume increases.
 
 %-------------------------------------------------------%
 
 \begin{thebibliography}{9}
-\bibitem{}
-  place holder
+
+% Example
+% \bibitem{label}
+%   Author(s),
+%   \textit{Title of the Work},
+%   Journal/Publisher,
+%   Year.
+
+\bibitem{mohammed2012}
+  I.~N. Mohammed and D.~G. Tarboton,
+  \textit{An Examination of the Sensitivity of the Great Salt Lake
+  to Changes in Inputs},
+  Water Resources Research, vol.~48, W11511,
+  doi:10.1029/2012WR011908, 2012.
 
 \end{thebibliography}
 
