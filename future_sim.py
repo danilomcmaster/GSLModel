@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-
+from sklearn.metrics import explained_variance_score
 from scipy.integrate import solve_ivp
 import scipy.stats as stats
 
@@ -188,6 +188,7 @@ def generate_inflow_sims(num_sims, sim_years):
     return inflow_sims
 
 def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=False, y0=np.array([7947655379]), ymax=1.8e10, ymin = 0.4e10, historical=False, true_vol=None):
+    scores = []
     if plot:
         plt.clf()
         plt.ylim((ymin, ymax))
@@ -220,6 +221,9 @@ def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=F
                 plt.plot(daily_dates, sol.y[0], linestyle="dashed", lw=0.5, color='purple', label='Predicted Volume')
             else:
                 plt.plot(daily_dates, sol.y[0], linestyle="dashed", lw=0.5, color='purple')
+            var_df = pd.Series(data=sol.y[0], index=daily_dates)
+            var_df = var_df[var_df.index.isin(monthly_dates)]
+            scores.append(np.round(explained_variance_score(true_vol[:-1], var_df.values), decimals=5))
         if result[-1] >= 13486550741:
             good_count += 1
             if plot and not historical:
@@ -284,7 +288,8 @@ def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=F
     results_dict["Transitory"] = okay_count / num_sims
     results_dict["Adverse Effects"] = bad_count / num_sims
     results_dict["Severe Adverse Effects"] = vbad_count / num_sims
-    
+    if historical:
+        return scores
     return f"In simulations for the next {sim_years} years with intervention level: {intervention_level}, Healthy Outcome count: {good_count}/{num_sims}, Transitory Outcome count: {okay_count}/{num_sims}, Adverse Effects Outcome count: {bad_count}/{num_sims}, Serious Adverse Effects Outcome count: {vbad_count}/{num_sims}", results_dict
 
 if __name__ == "__main__":
@@ -308,9 +313,10 @@ if __name__ == "__main__":
     df = df[df["Date"] >= pd.to_datetime("2000-01-01")]
     true_vol = df["Total_vol_m3"].to_numpy()
     t_to_date = df["Date"].to_list()
-    num_sims = 20
+    num_sims = 10
     sim_years = 24
-    string, dict = simulate(num_sims, sim_years, intervention_level=0, plot=True, y0 = np.array([21963728535.7859]), ymax=3e10, historical=True, true_vol=true_vol)
+    scores = simulate(num_sims, sim_years, intervention_level=0, plot=True, y0 = np.array([21963728535.7859]), ymax=3e10, historical=True, true_vol=true_vol)
+    print(scores)
 
 ## RESULTS (including serious adverse category)
 # In simulations for the next 10 years with intervention level: 0, Healthy Outcome count: 0/30, Transitory Outcome count: 1/30, Adverse Effects Outcome count: 7/30, Serious Adverse Effects Outcome count: 22/30
