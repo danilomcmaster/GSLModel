@@ -35,7 +35,9 @@ Lake dynamics and the GSL specifically have been the subject of research by ecol
 
 Our goal in modeling was to investigate the simplest possible model that would still be able to capture the inherent nature of the system. Sensitivity analysis of the system suggests the volume of the lake is most sensitive to changes in stream inflow and evaporation rate \cite{Mohammed2012}. Note that stream inflow is significantly impacted by water diversion for agriculture and other human use, so this is the primary control mechanism available to legislation aiming to preserve the lake. In addition, the variables with the most significant stabilizing effects on water volume are lake surface area and salinity \cite{Mohammed2012}. The results of this paper motivated the primary variables we focus on in our model: inflow, evaporation, and salinity. We calculate evaporation rate using a modified Penman equation to account for the effect of salinity on vapor pressure (standard practice in lake dynamics, see Mohammed et. al, Dunn et al.) \cite{Mohammed2012}\cite{Dunn2025}, which required selecting functions for humidity and temperature. We also include a term for precipitation to increase the realism of our model and better explain the historical change in lake volume. 
 
-The function describing the historical volume of the lake can be most accurately recreated using actual data for precipitation, humidity, and temperature, because this method accounts for variation of the lake due to unpredictable weather effects. However, this method is unable to produce projections for the future, because exact data for future temperature and precipitation are unknown. Some papers address this using Monte Carlo methods, where possible weather outcomes are simulated using thousands of random draws of distributions that can be derived from historical data \cite{Tarboton2025}. Such simulations allow researchers to report credible intervals of simulation results for lake volume. For the sake of simplicity, we opted for a deterministic method where the future of the lake is simulated using interpolated periodic functions for weather variables. Thus, our simulations should be interpreted as point estimates for the progression of the lake from some initial conditions assuming it experiences "average" seasonal precipitation, temperature, and humidity. 
+The function describing the historical volume of the lake can be most accurately recreated using actual data for precipitation, humidity, and temperature, because this method accounts for the variation of the lake due to unpredictable weather effects. However, this method is unable to produce projections for the future of the lake, because exact data for future temperature and precipitation are unknown. Some papers address this using Monte Carlo methods, where possible weather outcomes are simulated using thousands of random draws of distributions that can be derived from historical data (Tarboton 2026 et al) \cite{Tarboton2025}. Such simulations allow researchers to report credible intervals of simulation results for lake volume. In this project, for the sake of simplicity, we opted for a deterministic method where the future of the lake is simulated using interpolated periodic functions for weather variables. Thus our simulations should be interpreted as point estimates for the progression of the lake from some initial conditions assuming it experiences "average" seasonal precipitation, temperature, and humidity. 
+
+
 \section{Modeling}
 
 We derived a model to describe the change in volume of the Great Salt Lake over time. The simple version of this model incorporates a simple function capturing all of the inflow ($I(t)$) as well as a simple function approximating the evaporation rate ($E(t)$) of the lake proportional to its surface area at time $t$ (we note that the surface area is entirely dependent on the volume of the lake and has no inherent relationship to time). For the most simple system that we will be analyzing we chose not to consider factors such as precipitation, salinity, wind, and other factors. The ODE that represents this relationship is
@@ -137,14 +139,14 @@ While we initially considered evaporation as a constant, the primary limitation 
 By grounding our model in Dalton’s Law, we define the evaporation rate ($E$) as a function of environmental drivers:
 
 \begin{equation}
-    E = f(u) \cdot (e_s - e_a)
+E = f(u) \cdot (e_s - e_a)
 \end{equation}
+
 Where $f(u)$ represents a wind-dependent function that models the removal of saturated air from the lake surface. $(e_s - e_a)$ represents the atmospheric pull on lake water, dictated by temperature and humidity.
 
 To capture the impact of seasonal cycles, we treat the evaporation rate as a time-dependent variable within our Ordinary Differential Equation. The resulting model accounts for the downward multi-year trend while allowing for the temporary recovery phases observed during spring runoffs.
 
 To approximate these meteorological drivers, we utilize a sine-wave function for the evaporation coefficient. By incorporating this periodic function, the model becomes responsive to time. While this mass transfer framework is a significant mechanical upgrade from a constant-rate assumption, its current iteration relies on simulated weather parameters rather than historical climate datasets. 
-
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{./images/total_lake_volume_over_time.png}
@@ -153,10 +155,11 @@ To approximate these meteorological drivers, we utilize a sine-wave function for
 \end{figure}
 
 \subsection{Salinity}
-The GSL is a hyper-saline basin lake, and higher salinity water has a lower saturation vapor pressure, leading to lower evaporation rates. The effect of salinity on evaporation is not linear or logarithmic, but the effect of salinity on saturation vapor pressure is well documented, and reference tables are available. Evaporation rate is generally linear with respect to the deficit between saturation vapor pressure and actual vapor pressure above the surface of the water. Vapor pressure above the surface of the lake can be estimated using dew point or temperature data from nearby weather stations, possibly using monthly averages for computational efficiency. 
+The GSL is a hyper-saline basin lake, and higher salinity water has a lower saturation vapor pressure, leading to lower evaporation rates. 
 
+The effect of salinity on evaporation is not linear or logarithmic, but the effect of salinity on saturation vapor pressure is well documented, and reference tables are available. Evaporation rate is generally linear with respect to the deficit between saturation vapor pressure and actual vapor pressure above the surface of the water. Vapor pressure above the surface of the lake can be estimated using dew point or temperature data from nearby weather stations, possibly using monthly averages for computational efficiency. 
 
-To capture the way salinity of the water at the surface changes with volume, we can look at empirical measurements and interpolate between them. Salinity data from the North Arm of the lake (which has much higher salinity) have been averaged over surface area with salinity data from the Upper Brine Layer of the South Arm of the lake, because for this simplified model we are not considering volume of the two halves to be separate.
+To capture the way salinity of the water at the surface changes with volume, we can look at empirical measurements and interpolate between them. Salinity data from the North Arm of the lake (which has much higher salinity) have been averaged over surface area with salinity data from the Upper Brine Layer of the South Arm of the lake, because for this simplified model we are not considering volume of the two halves to be separate. 
 
 \subsection{Models}
 
@@ -221,7 +224,7 @@ In this model, we used the salinity function stated above, which was found via c
     \end{aligned}
 \end{equation}
 
-For model 3, we decided to model the salinity of the two halves of the lake separately. In model 2, we calculated just one estimate of salinity and used it to get percent reduction in vapor pressure. In this model, we calculated two salinity values: one for the southern part of the lake, $S_s(V)$, and one for the northern part of the lake, $S_n(V)$. We then took a weighted average (weight $K$ is the average ratio of surface area of the north arm of the lake to the surface area of the south arm) of the percent reduction in vapor pressure of these two salinity's to use in our evaporation equation. See Equation 4 for these equations.
+For model 3, we decided to model the salinity of the two halves of the lake separately. In model 2, we calculated just one estimate of salinity and used it to get percent reduction in vapor pressure. In this model, we calculated two salinity values: one for the southern part of the lake, $S_s(V)$, and one for the northern part of the lake, $S_n(V)$. We then took a weighted average (weight $K$ is the average ratio of surface area of the north arm of the lake to the surface area of the south arm) of the percent reduction in vapor pressure of these two salinity's to use in our evaporation equation. See Equation 4 for these equations. 
 
 The results of this change are shown in Figure~\ref{fig:model_3}. This change to evaporation caused our volume predictions, both with fitted inflow and empirical inflow, to follow the historical volume more closely. 
 
@@ -263,13 +266,31 @@ While our predictions for model 4, may seem encouraging, the periodic functions 
 \end{figure}
 
 \section{Results}
+
 Using historical inflow data, model 3 performs well, qualitatively, at predicting the volume of the lake. This allows us to conclude that solutions to our differential equation, when given correct values for its input functions, does well at predicting the volume of the lake. However, this model does not lend itself well to future predictions because of its reliance on historical data. This can be seen in model 3’s performance where, when using fitted periodic functions, it follows the overall trend of the data but doesn’t include any of the shocks normally seen in inflow functions. 
 
 Model 5 incorporates Monte Carlo sampling to better represent the unpredictable spikes in inflow. While this stochastic approach does not follow historical data as closely as deterministic models due to its inherent randomness, it is the most appropriate method for future projections where exact inflow values are unavailable.
 
-As shown in Figure~\ref{fig:model_5}, we defined volume thresholds correlating to the ecological health of the GSL. We ran simulations to assess the impact of different water management strategies. Our results indicate that if no action is taken, or if water usage is restricted by only 250 KAF/year, the probability of reaching a healthy volume by 2036 is negligible. However, if water usage is restricted by 800 KAF/year, there is a 32\% probability that the GSL will reach a healthy level by 2036.
+As shown in Figure~\ref{fig:model_5}, we defined volume thresholds correlating to the ecological health described in \textit{Great Salt Lake Data and Insights Summary} \cite{GSLStrikeTeam2026}. Our simulation results indicate that if no action is taken, or if water usage is restricted by only 250 KAF/year, the probability of reaching a healthy volume by 2036 is negligible. However, if water usage is restricted by 800 KAF/year, there is a 32\% probability that the GSL will reach a healthy level by 2036.
 
-
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\hline
+\textbf{Model} & \textbf{Fitted Inflow Functions} & \textbf{Empirical Inflow} \\
+\hline
+1    & 0.29721 & 0.66309 \\
+2    & 0.66981 & 0.92594 \\
+3    & 0.73966 & 0.93714 \\
+\hline
+\textbf{Model} & \textbf{Simulated Random Inflow} \\
+\hline
+5    & 0.533174 \\
+\hline
+\end{tabular}
+\caption{Explained variance score for our different models compared to the historical volume data}
+\label{tab:explained_var}
+\end{table}
 
 \section{Analysis/Conclusions}
 
