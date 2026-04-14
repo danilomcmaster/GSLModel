@@ -150,7 +150,7 @@ To approximate these meteorological drivers, we utilize a sine-wave function for
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{./images/total_lake_volume_over_time.png}
+    \includegraphics[width=0.5\textwidth]{./images/total_lake_volume_over_time.png}
     \caption{Total Lake Volume over Time of the Great Salt Lake}
     \label{fig:lake_volume}
 \end{figure}
@@ -158,7 +158,6 @@ To approximate these meteorological drivers, we utilize a sine-wave function for
 \subsection{Salinity}
 The GSL is a hyper-saline basin lake, and higher salinity water has a lower saturation vapor pressure, leading to lower evaporation rates. The effect of salinity on evaporation is not linear or logarithmic, but the effect of salinity on saturation vapor pressure is well documented, and reference tables are available. Evaporation rate is generally linear with respect to the deficit between saturation vapor pressure and actual vapor pressure above the surface of the water. Vapor pressure above the surface of the lake can be estimated using dew point or temperature data from nearby weather stations, possibly using monthly averages for computational efficiency. 
 
-\newline
 
 To capture the way salinity of the water at the surface changes with volume, we can look at empirical measurements and interpolate between them. Salinity data from the North Arm of the lake (which has much higher salinity) have been averaged over surface area with salinity data from the Upper Brine Layer of the South Arm of the lake, because for this simplified model we are not considering volume of the two halves to be separate.
 
