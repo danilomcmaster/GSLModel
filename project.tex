@@ -140,14 +140,14 @@ While we initially considered evaporation as a constant, the primary limitation 
 By grounding our model in Dalton’s Law, we define the evaporation rate ($E$) as a function of environmental drivers:
 
 \begin{equation}
-E = f(u) \cdot (e_s - e_a)
+    E = f(u) \cdot (e_s - e_a)
 \end{equation}
-
 Where $f(u)$ represents a wind-dependent function that models the removal of saturated air from the lake surface. $(e_s - e_a)$ represents the atmospheric pull on lake water, dictated by temperature and humidity.
 
 To capture the impact of seasonal cycles, we treat the evaporation rate as a time-dependent variable within our Ordinary Differential Equation. The resulting model accounts for the downward multi-year trend while allowing for the temporary recovery phases observed during spring runoffs.
 
 To approximate these meteorological drivers, we utilize a sine-wave function for the evaporation coefficient. By incorporating this periodic function, the model becomes responsive to time. While this mass transfer framework is a significant mechanical upgrade from a constant-rate assumption, its current iteration relies on simulated weather parameters rather than historical climate datasets. 
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{./images/total_lake_volume_over_time.png}
@@ -225,7 +225,7 @@ In this model, we used the salinity function stated above, which was found via c
     \end{aligned}
 \end{equation}
 
-For model 3, we decided to model the salinity of the two halves of the lake separately. In model 2, we calculated just one estimate of salinity and used it to get percent reduction in vapor pressure. In this model, we calculated two salinity values: one for the southern part of the lake, $S_s(V)$, and one for the northern part of the lake, $S_n(V)$. We then took a weighted average (weight $K$ is the average ratio of surface area of the north arm of the lake to the surface area of the south arm) of the percent reduction in vapor pressure of these two salinity's to use in our evaporation equation. See Equation 4 for these equations. 
+For model 3, we decided to model the salinity of the two halves of the lake separately. In model 2, we calculated just one estimate of salinity and used it to get percent reduction in vapor pressure. In this model, we calculated two salinity values: one for the southern part of the lake, $S_s(V)$, and one for the northern part of the lake, $S_n(V)$. We then took a weighted average (weight $K$ is the average ratio of surface area of the north arm of the lake to the surface area of the south arm) of the percent reduction in vapor pressure of these two salinity's to use in our evaporation equation. See Equation 4 for these equations.
 
 The results of this change are shown in Figure~\ref{fig:model_3}. This change to evaporation caused our volume predictions, both with fitted inflow and empirical inflow, to follow the historical volume more closely. 
 
@@ -239,7 +239,7 @@ The results of this change are shown in Figure~\ref{fig:model_3}. This change to
 
 \subsubsection{Model 4: Future predictions and human usage}
 
-Here, we decided to extend our model to future predictions. We could no longer use empirical historical data; we could only use our fitted functions. The results are show in Figure~\ref{fig:model_4}. We started our future predictions on January 1st, 2026 with the initial value being the volume of the lake on that day. The graph on the left shows our results for just the fitted functions and the graph on the right shows the results with human usage added in. To add in human usage, we reduced inflow by a factor 0.5 to see what would happen to the volume of the lake if half of the water going into the lake was diverted. 
+Here, we decided to extend our model to future predictions. We could no longer use empirical historical data; we could only use our fitted functions. The results are shown in Figure~\ref{fig:model_4}. We started our future predictions on January 1st, 2026 with the initial value being the volume of the lake on that day. The graph on the left shows our results for just the fitted functions and the graph on the right shows the results with human usage added in. To add in human usage, we reduced inflow by a factor 0.5 to see what would happen to the volume of the lake if half of the water going into the lake was diverted. 
 
 Interestingly, this model shows the volume of the lake increasing and stabilizing at an equilibrium point. Most likely, because of the periodicity of the functions we fit for inflow and evaporation, our differential equation has an equilibrium where our solution stabilizes. 
 
@@ -253,11 +253,28 @@ Interestingly, this model shows the volume of the lake increasing and stabilizin
 
 \subsubsection{Model 5: Future predictions with random inflow spikes}
 
+While our predictions for model 4, may seem encouraging, the periodic functions we defined are simplistic in comparison with typical real world data. In this model, we adjusted the precipitation and inflow functions to include random spikes reflective of historic random spikes observed in the data (This can be seen in Figure~\ref{fig:inflow}). We ran a number of different simulations with these random functions to attempt to predict how the volume of the GSL will change. We graded the volumes in the method described in \textit{Great Salt Lake Data and Insights Summary} \cite{GSLStrikeTeam2026} and shown in Figure ~\ref{fig:model_5}. These simulations are classified by the level of human intervention.
+
+\begin{figure}[h]
+    \begin{tabular}{ccc}
+    \includegraphics[width=0.3\textwidth]{./images/future_vol_simulation_10years_intervention0.png} & \includegraphics[width=0.3\textwidth]{./images/future_vol_simulation_10years_intervention1.png} & \includegraphics[width=0.3\textwidth]{./images/future_vol_simulation_10years_intervention2.png}
+    \end{tabular}
+
+    \centering
+     \includegraphics[width=\textwidth]{./images/mc_simulation_results_pie.png}
+    \caption{Model 5 predictions with randomness}
+    \label{fig:model_5}
+\end{figure}
+
 \section{Results}
 
 
 
 \section{Analysis/Conclusions}
+
+By modeling the Great Salt Lake as a closed-basin system using a first-order ODE, we created a computationally efficient tool that prioritizes key environmental drivers like salinity-dependent evaporation. This approach uses a single state variable ($V$) to follow the mass balance principle, allowing us to focus on the self-stabilizing physics where rising salinity slows evaporation. We utilized a multi-tiered strategy—combining interpolated functions for history, periodic functions for stability analysis, and Monte Carlo simulations for weather variance—to ensure the model was robust enough to handle Utah’s unpredictable climate. Starting with a simple freshwater baseline allowed us to isolate the impacts of salinity and bathymetry, proving that strategic simplifications are essential for verifying complex non-autonomous variables.
+
+Our findings reveal that while the lake shows seasonal fluctuations, it faces a long-term downward trend that requires significant policy intervention. We identified an equilibrium threshold showing that inflow must substantially exceed evaporation for a sustained period to recover the current volume deficit. This suggests that legislative efforts, such as restricting upstream water rights, must be implemented as permanent shifts in water management rather than temporary fixes. Without a long-term increase in basal inflow, any stabilization will be short-lived, and the lake will inevitably return to a state of decline once water diversion resumes.
 
 % \subsection{Nondimensionalization}
 
@@ -298,6 +315,12 @@ Interestingly, this model shows the volume of the lake increasing and stabilizin
   to Changes in Inputs},
   Water Resources Research, vol.~48, W11511,
   doi:10.1029/2012WR011908, 2012.
+
+\bibitem{GSLStrikeTeam2026}
+  Great Salt Lake Strike Team,
+  \textit{Great Salt Lake Data and Insights Summary},
+  Kem C. Gardner Policy Institute, University of Utah,
+  2026
 
 \end{thebibliography}
 
