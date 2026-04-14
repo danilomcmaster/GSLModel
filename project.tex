@@ -3,6 +3,7 @@
 \usepackage{graphicx} % Required for inserting images
 \usepackage{amssymb, amsmath, amsthm}
 \usepackage{geometry}
+\usepackage{hyperref}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{example}{Example}
@@ -64,8 +65,8 @@ For each of these component variables, we collected real world data on which to 
 
 \begin{enumerate}
 \item Interpolated functions - These use the exact values of the empirical data, and connect each point with a line. These were primarily used to compare the trajectory of our ODE with historical volume data given an initial value.
-\item Fitted functions - With the exception of salinity, we approximated these functions using periodic functions fitted to the empirical data using scipy.optimize.curve\_fit (we did also use a fourier transform to fit a temperature function, but this was not used for any of the predictions). Salinity was fit to a function of the form $C_1V^{-1} + C_2V^{-1/3}$ also using the curve\_fit function. The equations for these fitted functions appear below and a plot of their behavior on a one-year interval also appears below in \ref{Figure 1}{Figure 1}. 
-\item Monte Carlo
+\item Fitted functions - With the exception of salinity, we approximated these functions using periodic functions fitted to the empirical data using scipy.optimize.curve\_fit (we did also use a fourier transform to fit a temperature function, but this was not used for any of the predictions). Salinity was fit to a function of the form $C_1V^{-1} + C_2V^{-1/3}$ also using the curve\_fit function. The equations for these fitted functions appear below and a plot of their behavior on a one-year interval also appears below in Figure~\ref{fig:autonomous} and Figure ~\ref{fig:nonautonomous}. 
+\item Monte Carlo simulation - Precipitation and inflow exhibited random behavior with large variance that was difficult to capture with a simple function. We used a Monte Carlo simulation to be able to simulate this behavior and achieve more accurate prediction.
 \end{enumerate}
 
 \begin{equation}
@@ -84,25 +85,30 @@ For each of these component variables, we collected real world data on which to 
 
 \begin{figure}[h!]
 \centering
-\caption{Plots of each of the periodic fitted functions on a one-year interval}
-\label{Figure 1}
+\caption{Plots of each of the periodic fitted autonomous functions on a one-year interval}
+\label{fig:autonomous}
 \begin{tabular}{ccc}
-  \includegraphics[width=0.3\textwidth]{Vol_no_salinity_empirical_inflow.png} &
-  \includegraphics[width=0.3\textwidth]{basic_inflow_1.png} &
-  \includegraphics[width=0.3\textwidth]{bathymetry_graph.jpg} \\
+  \includegraphics[width=0.3\textwidth]{./images/evaporation_model.png} &
+  \includegraphics[width=0.3\textwidth]{./images/basic_inflow_1.png} & \includegraphics[width=0.3\textwidth]{./images/precipitation_fit.png} \\
 
-  \includegraphics[width=0.3\textwidth]{temperature_model.png} &
-  \includegraphics[width=0.3\textwidth]{humidity_model.png} &
-  \includegraphics[width=0.3\textwidth]{surface_salinity_model.jpg} \\
+  \includegraphics[width=0.3\textwidth]{./images/temperature_model.png} &
+  \includegraphics[width=0.3\textwidth]{./images/humidity_model.png} & \includegraphics[width=0.3\textwidth]{./images/wind_speed_model.png} 
 
-  \includegraphics[width=0.3\textwidth]{evaporation_model.png} &
-  \includegraphics[width=0.3\textwidth]{precipitation_fit.png} &
-  \includegraphics[width=0.3\textwidth]{wind_speed_model.png}
 \end{tabular}
 \end{figure}
 
+\begin{figure}
+    \centering
+    \caption{Plots of each of the fitted non-autonomous functions}
+    \label{fig:nonautonomous}
+    \begin{tabular}{cc}
+        \includegraphics[width=0.3\textwidth]{./images/bathymetry_graph.jpg} &
+        \includegraphics[width=0.3\textwidth]{./images/surface_salinity_model.jpg} 
+    \end{tabular}
+\end{figure}
 
-This is a nonautonomous ODE, whose order can depend on different factors of the shape of the lake basin. It is interesting to note that when modeling a shallow lake such as the Great Salt Lake, it is common to approximate the function of surface area as a function of volume as some function resembling $A = kV^a$ for some $a$ usually less than one. We have chosen, however, to represent the function describing surface area in terms of volume as an approximation of real-life bathymetry data. While this choice will help us to construct a closer approximation to the volume data of the Great Salt Lake, it is worth noting that this decision also makes it slightly more difficult to analyze the ODE explicitly since there is no closed form representation of that equation. 
+
+This is a non-autonomous ODE, whose order can depend on different factors of the shape of the lake basin. It is interesting to note that when modeling a shallow lake such as the Great Salt Lake, it is common to approximate the function of surface area as a function of volume as some function resembling $A = kV^a$ for some $a$ usually less than one. We have chosen, however, to represent the function describing surface area in terms of volume as an approximation of real-life bathymetry data. While this choice will help us to construct a closer approximation to the volume data of the Great Salt Lake, it is worth noting that this decision also makes it slightly more difficult to analyze the ODE explicitly since there is no closed form representation of that equation. 
 
 \subsection{Inflow}
 There are three main tributaries that flow into the Great Salt Lake. For this model, 
@@ -112,26 +118,39 @@ To derive a single, analytical function that can model the inflow from rivers, w
 
 Accepting that a decrease in flow from the tributaries is a major factor in the shrinking of the Great Salt Lake,
 we investigated how water diversion and basin depletion have affected the inflow of the lake.
-Unfortunately we were able to find any quantitave answers that suggested a certain function to model the decrease in inflow,
-so we decided to incorporate a simple linear decrease to the inflow function to model increased tributaroy depletion over the two decades.
-The graph of inflow data and the fitted function are shown in Figure~\ref{fig:inflow}.
+Unfortunately we were able to find any quantitative answers that suggested a certain function to model the decrease in inflow,
+so we decided to incorporate a simple linear decrease to the inflow function to model increased tributary depletion over the two decades.
+The graph of inflow data and the fitted function are shown to the left in Figure~\ref{fig:inflow}.
+
+
+Unfortunately, modeling the inflow from the tributary rivers as purely periodic does not capture its true behavior.
+Random spikes in inflow from the rivers can be better predicted by monte carlo simulations which attempt to simulate a similar sort of random process, thus making predicted results resemble actual expected inflows much more closely. The resulting approximation can be seen on the right of Figure~\ref{fig:inflow}
 
 \begin{figure}[h]
-  \includegraphics[width=\linewidth]{basic_inflow.png}
-  \caption{Inflow function}
+  \begin{tabular}{cc}
+    \includegraphics[width=0.5\linewidth]{./images/basic_inflow.png} & \includegraphics[width=0.5\linewidth]{./images/simulated_10year_inflow_model.png}
+  \end{tabular}
+  \caption{Inflow functions}
   \label{fig:inflow}
 \end{figure}
 
 \subsection{Outflow}
-While we initially considered evaporation as a constant, the underlying data shows clear periodic fluctuations which we concluded were due to seasons. To account for the seasonality of temperature and humidity, we intend to model the evaporation coefficient using a sine function.
+While we initially considered evaporation as a constant, the primary limitation of a constant-rate model is its inability to account for the periodic fluctuations observed in historical lake data. To bridge this gap, we transitioned to a mass transfer model based on Dalton’s Law. This decision stems from the physical reality that evaporation is not a static loss but a dynamic process driven by the vapor pressure deficit which is the difference between the moisture the air can hold and the moisture currently present.
+
+By grounding our model in Dalton’s Law, we define the evaporation rate ($E$) as a function of environmental drivers:
+
 \begin{equation}
-    k(t) = A \cdot \sin\left(\frac{2\pi}{12}t + \phi\right) + C
+    E = f(u) \cdot (e_s - e_a)
 \end{equation}
-This allows us to simulate the peak evaporation of the hot summer months and the reduced loss during winter. Similarly, this periodic approach helps explain why the lake volume follows a downward trend, consistently losing ground over years, but showing temporary recovery during the spring runoff.
+Where $f(u)$ represents a wind-dependent function that models the removal of saturated air from the lake surface. $(e_s - e_a)$ represents the atmospheric pull on lake water, dictated by temperature and humidity.
+
+To capture the impact of seasonal cycles, we treat the evaporation rate as a time-dependent variable within our Ordinary Differential Equation. The resulting model accounts for the downward multi-year trend while allowing for the temporary recovery phases observed during spring runoffs.
+
+To approximate these meteorological drivers, we utilize a sine-wave function for the evaporation coefficient. By incorporating this periodic function, the model becomes responsive to time. While this mass transfer framework is a significant mechanical upgrade from a constant-rate assumption, its current iteration relies on simulated weather parameters rather than historical climate datasets. 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{total_lake_volume_over_time.png}
+    \includegraphics[width=0.8\textwidth]{./images/total_lake_volume_over_time.png}
     \caption{Total Lake Volume over Time of the Great Salt Lake}
     \label{fig:lake_volume}
 \end{figure}
@@ -142,13 +161,6 @@ The GSL is a hyper-saline basin lake, and higher salinity water has a lower satu
 \newline
 
 To capture the way salinity of the water at the surface changes with volume, we can look at empirical measurements and interpolate between them. Salinity data from the North Arm of the lake (which has much higher salinity) have been averaged over surface area with salinity data from the Upper Brine Layer of the South Arm of the lake, because for this simplified model we are not considering volume of the two halves to be separate.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{salinity.jpg}
-    \caption{Surface Salinity Data vs. Elevation for the Great Salt Lake}
-    \label{fig:surface_salinity}
-\end{figure}
 
 \subsection{Models}
 
@@ -163,8 +175,8 @@ The plot on the right however, uses empirical inflow data and thus, better model
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{Vol_pred_fitted_no_salt.png}
-    \includegraphics[width=0.4\textwidth]{Vol_pred_empirical_no_salt.png}
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_fitted_no_salt.png}
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_empirical_no_salt.png}
     \caption{Model 1 with fitted sine functions for both inflow from rivers and precipitation}
     \label{fig:model_1}
 \end{figure}
@@ -177,49 +189,92 @@ The plot on the right however, uses empirical inflow data and thus, better model
 
 \subsubsection{Model 2: Weighted average of salinity}
 
-In our next model, we decided to include salinity. As stated in the introduction, the lake is split into two halves each with different salinities. In this model, we took a weighted average of those salinities and incorporated them into the evaporation function. In Figure~\ref{fig:model_2}, we plot this model using both fitted functions for inflow and empirical inflow.  
+In our next model, we decided to include salinity; see $S(V)$ in Equation 1 for the equation for salinity. The effect of salinity on evaporation is described by the following modified version of our equation for $E_d(V, t)$:
+
+\begin{equation}
+    E_d(V, t) = \max[(0.001 + 0.0005W(t)]0.611 * e^{\frac{17.27T(t)}{T(t) + 237.3}}[1 - r_S(S(V)) - H(t)], 0)  \\
+\end{equation} 
+
+Where $r_s(c)$ is the percent reduction in vapor pressure (compared to the vapor pressure of freshwater at the same temperature) as a function of salinity. This function is unique to the Great Salt Lake's exact makeup of salts. Raoult's Law is an equation for reduction in vapor pressure as a function of salinity, but it's only accurate for relatively low concentrations of salt. Thus the reduction in vapor pressure in the hypersaline water of the GSL cannot be predicted by Raoult's Law. Dickson et al. reports on the ratio for water samples from the GSL at various brine concentrations calculated empirically. This data was limited in the range of brine concentrations tested, so we needed to extend the data into a function. We fit a logistic function to the residuals of the data after subtracting the prediction from Raoult's Law, which resulted in the model shown in Figure~\ref{fig:vapor_pressure_reduc}.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{Vol_pred_fitted_salt.png}
-    \includegraphics[width=0.4\textwidth]{Vol_pred_empirical_salt.png}
+    \includegraphics[width=0.4\textwidth]{./images/es_reduction_model.jpg}
+    \caption{Vapor Pressure Reduction Model}
+    \label{fig:vapor_pressure_reduc}
+\end{figure}
+
+In this model, we used the salinity function stated above, which was found via curve fitting to salinity data. In Figure~\ref{fig:model_2}, we plot this model using both fitted functions for inflow and empirical inflow.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_fitted_salt.png}
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_empirical_salt.png}
     \caption{Model 2 with weighted average salinity}
     \label{fig:model_2}
 \end{figure}
 
 \subsubsection{Model 3: Two halves salinity}
+\begin{equation}
+\begin{aligned}
+    S_s(V) &= 1564600000000V^{-1} - 4334^{-\frac{1}{3}} \\
+    S_n(V) &= 662925000000V^{-1} + 462860^{-\frac{1}{3}} \\
+    E_d(V, t) &= \max[(0.001 + 0.0005W(t)]0.611 * e^{\frac{17.27T(t)}{T(t) + 237.3}}[1 - r_S^{*}(S_n(V), S_s(V)) - H(t)], 0)  \\
+    r_S^{*}(c_n, c_s) &= [K*r_S(c_n) + (1 - K)*r_S(c_s)] \\
+    K &= 0.615 \\
+    \end{aligned}
+\end{equation}
 
-For model three, we decided to model the salinity of the two halves of the lake separately.
+For model 3, we decided to model the salinity of the two halves of the lake separately. In model 2, we calculated just one estimate of salinity and used it to get percent reduction in vapor pressure. In this model, we calculated two salinity values: one for the southern part of the lake, $S_s(V)$, and one for the northern part of the lake, $S_n(V)$. We then took a weighted average (weight $K$ is the average ratio of surface area of the north arm of the lake to the surface area of the south arm) of the percent reduction in vapor pressure of these two salinity's to use in our evaporation equation. See Equation 4 for these equations.
+
+The results of this change are shown in Figure~\ref{fig:model_3}. This change to evaporation caused our volume predictions, both with fitted inflow and empirical inflow, to follow the historical volume more closely. 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{Vol_pred_fitted_salt_improved.png}
-    \includegraphics[width=0.4\textwidth]{Vol_pred_empirical_salt_improved.png}
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_fitted_salt_improved.png}
+    \includegraphics[width=0.4\textwidth]{./images/Vol_pred_empirical_salt_improved.png}
     \caption{Model 3}
     \label{fig:model_3}
 \end{figure}
 
 \subsubsection{Model 4: Future predictions and human usage}
 
-Here, we decided to extend our model to future predictions. We could no longer use empirical historical data; we could only use our fitted functions. The results are show in Figure~\ref{fig:model_4}. We started our future predictions on January 1st, 2026 with the initial value being the volume of the lake on that day. The graph on the left shows our results for just the fitted functions and the graph on the right shows the results with human usage added in. To add in human usage, we reduced inflow by a factor 0.5 to see what would happen to the volume of the lake if half of the water going into the lake was diverted. 
+Here, we decided to extend our model to future predictions. We could no longer use empirical historical data; we could only use our fitted functions. The results are shown in Figure~\ref{fig:model_4}. We started our future predictions on January 1st, 2026 with the initial value being the volume of the lake on that day. The graph on the left shows our results for just the fitted functions and the graph on the right shows the results with human usage added in. To add in human usage, we reduced inflow by a factor 0.5 to see what would happen to the volume of the lake if half of the water going into the lake was diverted. 
 
 Interestingly, this model shows the volume of the lake increasing and stabilizing at an equilibrium point. Most likely, because of the periodicity of the functions we fit for inflow and evaporation, our differential equation has an equilibrium where our solution stabilizes. 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{future_preds.png}
-    \includegraphics[width=0.4\textwidth]{future_preds_human_usage.png}
+    \includegraphics[width=0.4\textwidth]{./images/future_preds.png}
+    \includegraphics[width=0.4\textwidth]{./images/future_preds_human_usage.png}
     \caption{Model 4}
     \label{fig:model_4}
 \end{figure}
 
 \subsubsection{Model 5: Future predictions with random inflow spikes}
 
+While our predictions for model 4, may seem encouraging, the periodic functions we defined are simplistic in comparison with typical real world data. In this model, we adjusted the precipitation and inflow functions to include random spikes reflective of historic random spikes observed in the data (This can be seen in Figure~\ref{fig:inflow}). We ran a number of different simulations with these random functions to attempt to predict how the volume of the GSL will change. We graded the volumes in the method described in \textit{Great Salt Lake Data and Insights Summary} \cite{GSLStrikeTeam2026} and shown in Figure ~\ref{fig:model_5}. These simulations are classified by the level of human intervention.
+
+\begin{figure}[h]
+    \begin{tabular}{ccc}
+    \includegraphics[width=0.3\textwidth]{./images/future_vol_simulation_10years_intervention0.png} & \includegraphics[width=0.3\textwidth]{./images/future_vol_simulation_10years_intervention1.png} & \includegraphics[width=0.3\textwidth]{./images/future_vol_simulation_10years_intervention2.png}
+    \end{tabular}
+
+    \centering
+     \includegraphics[width=\textwidth]{./images/mc_simulation_results_pie.png}
+    \caption{Model 5 predictions with randomness}
+    \label{fig:model_5}
+\end{figure}
+
 \section{Results}
 
 
 
 \section{Analysis/Conclusions}
+
+By modeling the Great Salt Lake as a closed-basin system using a first-order ODE, we created a computationally efficient tool that prioritizes key environmental drivers like salinity-dependent evaporation. This approach uses a single state variable ($V$) to follow the mass balance principle, allowing us to focus on the self-stabilizing physics where rising salinity slows evaporation. We utilized a multi-tiered strategy—combining interpolated functions for history, periodic functions for stability analysis, and Monte Carlo simulations for weather variance—to ensure the model was robust enough to handle Utah’s unpredictable climate. Starting with a simple freshwater baseline allowed us to isolate the impacts of salinity and bathymetry, proving that strategic simplifications are essential for verifying complex non-autonomous variables.
+
+Our findings reveal that while the lake shows seasonal fluctuations, it faces a long-term downward trend that requires significant policy intervention. We identified an equilibrium threshold showing that inflow must substantially exceed evaporation for a sustained period to recover the current volume deficit. This suggests that legislative efforts, such as restricting upstream water rights, must be implemented as permanent shifts in water management rather than temporary fixes. Without a long-term increase in basal inflow, any stabilization will be short-lived, and the lake will inevitably return to a state of decline once water diversion resumes.
 
 % \subsection{Nondimensionalization}
 
@@ -260,6 +315,12 @@ Interestingly, this model shows the volume of the lake increasing and stabilizin
   to Changes in Inputs},
   Water Resources Research, vol.~48, W11511,
   doi:10.1029/2012WR011908, 2012.
+
+\bibitem{GSLStrikeTeam2026}
+  Great Salt Lake Strike Team,
+  \textit{Great Salt Lake Data and Insights Summary},
+  Kem C. Gardner Policy Institute, University of Utah,
+  2026
 
 \end{thebibliography}
 
