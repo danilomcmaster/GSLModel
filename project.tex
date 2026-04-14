@@ -266,6 +266,11 @@ While our predictions for model 4, may seem encouraging, the periodic functions 
 \end{figure}
 
 \section{Results}
+Using historical inflow data, model 3 performs well, qualitatively, at predicting the volume of the lake. This allows us to conclude that solutions to our differential equation, when given correct values for its input functions, does well at predicting the volume of the lake. However, this model does not lend itself well to future predictions because of its reliance on historical data. This can be seen in model 3’s performance where, when using fitted periodic functions, it follows the overall trend of the data but doesn’t include any of the shocks normally seen in inflow functions. 
+
+Model 5 incorporates Monte Carlo sampling to better represent the unpredictable spikes in inflow. While this stochastic approach does not follow historical data as closely as deterministic models due to its inherent randomness, it is the most appropriate method for future projections where exact inflow values are unavailable.
+
+As shown in Figure~\ref{fig:model_5}, we defined volume thresholds correlating to the ecological health of the GSL. We ran simulations to assess the impact of different water management strategies. Our results indicate that if no action is taken, or if water usage is restricted by only 250 KAF/year, the probability of reaching a healthy volume by 2036 is negligible. However, if water usage is restricted by 800 KAF/year, there is a 32\% probability that the GSL will reach a healthy level by 2036.
 
 
 
