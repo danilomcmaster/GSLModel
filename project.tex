@@ -140,14 +140,14 @@ While we initially considered evaporation as a constant, the primary limitation 
 By grounding our model in Dalton’s Law, we define the evaporation rate ($E$) as a function of environmental drivers:
 
 \begin{equation}
-    E = f(u) \cdot (e_s - e_a)
+E = f(u) \cdot (e_s - e_a)
 \end{equation}
+
 Where $f(u)$ represents a wind-dependent function that models the removal of saturated air from the lake surface. $(e_s - e_a)$ represents the atmospheric pull on lake water, dictated by temperature and humidity.
 
 To capture the impact of seasonal cycles, we treat the evaporation rate as a time-dependent variable within our Ordinary Differential Equation. The resulting model accounts for the downward multi-year trend while allowing for the temporary recovery phases observed during spring runoffs.
 
 To approximate these meteorological drivers, we utilize a sine-wave function for the evaporation coefficient. By incorporating this periodic function, the model becomes responsive to time. While this mass transfer framework is a significant mechanical upgrade from a constant-rate assumption, its current iteration relies on simulated weather parameters rather than historical climate datasets. 
-
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{./images/total_lake_volume_over_time.png}
@@ -225,7 +225,7 @@ In this model, we used the salinity function stated above, which was found via c
     \end{aligned}
 \end{equation}
 
-For model 3, we decided to model the salinity of the two halves of the lake separately. In model 2, we calculated just one estimate of salinity and used it to get percent reduction in vapor pressure. In this model, we calculated two salinity values: one for the southern part of the lake, $S_s(V)$, and one for the northern part of the lake, $S_n(V)$. We then took a weighted average (weight $K$ is the average ratio of surface area of the north arm of the lake to the surface area of the south arm) of the percent reduction in vapor pressure of these two salinity's to use in our evaporation equation. See Equation 4 for these equations.
+For model 3, we decided to model the salinity of the two halves of the lake separately. In model 2, we calculated just one estimate of salinity and used it to get percent reduction in vapor pressure. In this model, we calculated two salinity values: one for the southern part of the lake, $S_s(V)$, and one for the northern part of the lake, $S_n(V)$. We then took a weighted average (weight $K$ is the average ratio of surface area of the north arm of the lake to the surface area of the south arm) of the percent reduction in vapor pressure of these two salinity's to use in our evaporation equation. See Equation 4 for these equations. 
 
 The results of this change are shown in Figure~\ref{fig:model_3}. This change to evaporation caused our volume predictions, both with fitted inflow and empirical inflow, to follow the historical volume more closely. 
 
@@ -239,7 +239,7 @@ The results of this change are shown in Figure~\ref{fig:model_3}. This change to
 
 \subsubsection{Model 4: Future predictions and human usage}
 
-Here, we decided to extend our model to future predictions. We could no longer use empirical historical data; we could only use our fitted functions. The results are shown in Figure~\ref{fig:model_4}. We started our future predictions on January 1st, 2026 with the initial value being the volume of the lake on that day. The graph on the left shows our results for just the fitted functions and the graph on the right shows the results with human usage added in. To add in human usage, we reduced inflow by a factor 0.5 to see what would happen to the volume of the lake if half of the water going into the lake was diverted. 
+Here, we decided to extend our model to future predictions. We could no longer use empirical historical data; we could only use our fitted functions. The results are show in Figure~\ref{fig:model_4}. We started our future predictions on January 1st, 2026 with the initial value being the volume of the lake on that day. The graph on the left shows our results for just the fitted functions and the graph on the right shows the results with human usage added in. To add in human usage, we reduced inflow by a factor 0.5 to see what would happen to the volume of the lake if half of the water going into the lake was diverted. 
 
 Interestingly, this model shows the volume of the lake increasing and stabilizing at an equilibrium point. Most likely, because of the periodicity of the functions we fit for inflow and evaporation, our differential equation has an equilibrium where our solution stabilizes. 
 
@@ -268,7 +268,24 @@ While our predictions for model 4, may seem encouraging, the periodic functions 
 
 \section{Results}
 
-
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\hline
+\textbf{Model} & \textbf{Fitted Inflow Functions} & \textbf{Empirical Inflow} \\
+\hline
+1    & 0.29721 & 0.66309 \\
+2    & 0.66981 & 0.92594 \\
+3    & 0.73966 & 0.93714 \\
+\hline
+\textbf{Model} & \textbf{Simulated Random Inflow} \\
+\hline
+5    & 0.533174 \\
+\hline
+\end{tabular}
+\caption{Explained variance score for our different models compared to the historical volume data}
+\label{tab:explained_var}
+\end{table}
 
 \section{Analysis/Conclusions}
 
