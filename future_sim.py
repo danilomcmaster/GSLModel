@@ -187,11 +187,9 @@ def generate_inflow_sims(num_sims, sim_years):
         inflow_sims.append(river_inflow_simulated(sim_years + 2))
     return inflow_sims
 
-def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=False):
-    y0 = np.array([7947655379]) # Initial conditions
-    ymax = 1.8e10
-    ymin = 0.4e10
+def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=False, y0=np.array([7947655379]), ymax=1.8e10, ymin = 0.4e10, historical=False, true_vol=None):
     if plot:
+        plt.clf()
         plt.ylim((ymin, ymax))
     first_good = True
     first_okay = True
@@ -202,7 +200,6 @@ def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=F
     bad_count = 0
     vbad_count = 0
     width = 1
-    i = 0
     intervention_level_dict = {0: 0, 1: meters_cubed_per_day(250), 2: meters_cubed_per_day(800)}
     if inflow_sims == None:
         inflow_sims = generate_inflow_sims(num_sims, sim_years)
@@ -211,11 +208,21 @@ def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=F
         inflow_sim += intervention_level_dict[intervention_level]
         def ode(t, V):
             return inflow_simulated(t, V, inflow_sim) + outflow(t, V, include_salinity=True, improved=True)
+        if historical:
+            t_domain = (0, 9039) # Interval
+            t_eval = np.arange(9040)
         sol = solve_ivp(ode, t_domain, y0, max_step=5, t_eval=t_eval)
         result = sol.y[0]
+        if plot and historical:
+            daily_dates = pd.date_range(start="2000-01-01", periods=9040, freq="D")
+            monthly_dates = pd.date_range(start="2000-01-01", periods=298, freq="MS")
+            if i == 0:
+                plt.plot(daily_dates, sol.y[0], linestyle="dashed", lw=0.5, color='purple', label='Predicted Volume')
+            else:
+                plt.plot(daily_dates, sol.y[0], linestyle="dashed", lw=0.5, color='purple')
         if result[-1] >= 13486550741:
             good_count += 1
-            if plot:
+            if plot and not historical:
                 if not first_good:
                     plt.plot(daily_dates, sol.y[0], linestyle='dashed', color='green', lw=width, label='Healthy Outcome')
                 else:
@@ -223,7 +230,7 @@ def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=F
                 first_good = True
         elif result[-1] >= 10972391857:
             okay_count += 1
-            if plot:
+            if plot and not historical:
                 if not first_okay:
                     plt.plot(daily_dates, sol.y[0], linestyle='dashed', color='gold', lw=width, label='Transitory Outcome')
                 else:
@@ -231,7 +238,7 @@ def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=F
                 first_okay = True
         elif result[-1] >= 8751620241:
             bad_count += 1
-            if plot:
+            if plot and not historical:
                 if not first_bad:
                     plt.plot(daily_dates, sol.y[0], linestyle='dashed', color='darkorange', lw=width, label='Adverse Effects Outcome')
                 else:
@@ -239,14 +246,14 @@ def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=F
                 first_bad = True
         else:
             vbad_count += 1
-            if plot:
+            if plot and not historical:
                 if not first_vbad:
                     plt.plot(daily_dates, sol.y[0], linestyle='dashed', color='red', lw=width, label='Serious Adverse Effects Outcome')
                 else:
                     plt.plot(daily_dates, sol.y[0], linestyle='dashed', color='red', lw=width)
                 first_vbad = True
 
-    if plot:
+    if plot and not historical:
         plt.axhspan(13486550741, ymax, alpha=0.2, color='green', label='Healthy')
         plt.axhspan(10972391857, 13486550741, alpha=0.1, color='orange', label='Transitory')
         plt.axhspan(8751620241, 10972391857, alpha=0.1, color='red', label='Adverse Effects')
@@ -264,6 +271,14 @@ def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=F
         plt.ylabel("Volume")
         plt.savefig(f"./images/vol_simulation_{sim_years}years_intervention{intervention_level}.png")
         plt.clf()
+    if plot and historical:
+        plt.plot(monthly_dates, true_vol, label="True Volume", color='blue')
+        plt.title("Historical Volume Prediction (Simulated Inflow)")
+        plt.legend()
+        plt.xlabel("t")
+        plt.ylabel("Volume")
+        plt.ylim(bottom=0)
+        plt.savefig("./images/vol_sim_historical.png")
     results_dict = {}
     results_dict["Healthy"] = good_count / num_sims
     results_dict["Transitory"] = okay_count / num_sims
@@ -273,18 +288,29 @@ def simulate(num_sims, sim_years, inflow_sims=None, intervention_level=0, plot=F
     return f"In simulations for the next {sim_years} years with intervention level: {intervention_level}, Healthy Outcome count: {good_count}/{num_sims}, Transitory Outcome count: {okay_count}/{num_sims}, Adverse Effects Outcome count: {bad_count}/{num_sims}, Serious Adverse Effects Outcome count: {vbad_count}/{num_sims}", results_dict
 
 if __name__ == "__main__":
-    intervention_level_interp_dict = {0: "No Intervention", 1: "Additional 250 KAF/year", 2: "Additional 800 KAF/year"}
-    num_sims = 500
-    sim_years = 10
-    inflow_sims = generate_inflow_sims(num_sims, sim_years)
-    intervention_levels = [0, 1, 2]
-    results_strings = []
-    results = {}
-    for level in intervention_levels:
-        string, dict = simulate(num_sims, sim_years, inflow_sims, intervention_level=level, plot=False)
-        results_strings.append(string)
-        results[intervention_level_interp_dict[level]] = dict 
-    print(results)
+    # intervention_level_interp_dict = {0: "No Intervention", 1: "Additional 250 KAF/year", 2: "Additional 800 KAF/year"}
+    # num_sims = 500
+    # sim_years = 10
+    # inflow_sims = generate_inflow_sims(num_sims, sim_years)
+    # intervention_levels = [0, 1, 2]
+    # results_strings = []
+    # results = {}
+    # for level in intervention_levels:
+    #     string, dict = simulate(num_sims, sim_years, inflow_sims, intervention_level=level, plot=False)
+    #     results_strings.append(string)
+    #     results[intervention_level_interp_dict[level]] = dict 
+    # print(results)
+
+    df = pd.read_csv('data/GSLLevelVol.csv')
+    df['Date'] = pd.to_datetime(df['Date'])
+    df = df.sort_values('Date')
+
+    df = df[df["Date"] >= pd.to_datetime("2000-01-01")]
+    true_vol = df["Total_vol_m3"].to_numpy()
+    t_to_date = df["Date"].to_list()
+    num_sims = 20
+    sim_years = 24
+    string, dict = simulate(num_sims, sim_years, intervention_level=0, plot=True, y0 = np.array([21963728535.7859]), ymax=3e10, historical=True, true_vol=true_vol)
 
 ## RESULTS (including serious adverse category)
 # In simulations for the next 10 years with intervention level: 0, Healthy Outcome count: 0/30, Transitory Outcome count: 1/30, Adverse Effects Outcome count: 7/30, Serious Adverse Effects Outcome count: 22/30
